@@ -1,0 +1,8 @@
+{
+  "command": "/Users/gavinmestler/.npm-global/bin/mcp-server-supabase",
+  "args": [],
+  "env": {
+    "SUPABASE_URL": "https://dyhfoqepatibrfrnztxw.supabase.co",
+    "SUPABASE_SERVICE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5aGZvcWVwYXRpYnJmcm56dHh3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDYxOTEyMSwiZXhwIjoyMDY2MTk1MTIxfQ.L0hIihsLeuPIWB8V5VHl_KBD-8K5418po5ZoKD8V8Yk"
+  }
+}

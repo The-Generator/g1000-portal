@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "/Users/gavinmestler/.npm-global/bin/mcp-server-supabase",
+      "args": [],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "sbp_f8b1cf8e84a4e16a53e5d62007785845866d331d"
+      }
+    }
+  }
+}
