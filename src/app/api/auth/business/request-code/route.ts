@@ -38,28 +38,23 @@ export async function POST(request: NextRequest) {
       .eq('role', 'owner')
       .single();
 
-    if (userError || !user) {
-      console.log('❌ Business owner not found:', email);
-      return NextResponse.json(
-        { error: 'Email not found. Please make sure you are registered as a business owner.' },
-        { status: 404 }
-      );
+    if (user && !userError) {
+      // Check if business is approved
+      const ownerProfile = Array.isArray(user.business_owner_profiles)
+        ? user.business_owner_profiles[0]
+        : user.business_owner_profiles;
+
+      if (!ownerProfile?.is_approved) {
+        console.log('❌ Business not approved:', email);
+        return NextResponse.json(
+          { error: 'Your business account is awaiting approval. Please contact support.' },
+          { status: 403 }
+        );
+      }
+      console.log('✅ Found approved business owner:', user.name);
+    } else {
+      console.log('✅ Allowing new business owner registration:', email);
     }
-
-    // Check if business is approved
-    const ownerProfile = Array.isArray(user.business_owner_profiles)
-      ? user.business_owner_profiles[0]
-      : user.business_owner_profiles;
-
-    if (!ownerProfile?.is_approved) {
-      console.log('❌ Business not approved:', email);
-      return NextResponse.json(
-        { error: 'Your business account is awaiting approval. Please contact support.' },
-        { status: 403 }
-      );
-    }
-
-    console.log('✅ Found approved business owner:', user.name);
 
     // Check if user exists in Supabase Auth
     let authUserExists = false;
@@ -76,14 +71,19 @@ export async function POST(request: NextRequest) {
     // If user doesn't exist in Auth, create them with auto-confirmed email
     if (!authUserExists) {
       console.log('🔨 Creating new user in Supabase Auth with auto-confirmed email...');
+      const emailPrefix = email.split('@')[0];
+      const defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+
+      const ownerProfile = user ? (Array.isArray(user.business_owner_profiles) ? user.business_owner_profiles[0] : user.business_owner_profiles) : null;
+
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email: email.toLowerCase(),
         email_confirm: true, // Auto-confirm to skip confirmation email
         user_metadata: {
-          name: user.name,
+          name: user?.name || defaultName,
           role: 'owner',
-          company_name: ownerProfile.company_name || ownerProfile.business_name,
-          user_id: user.id
+          company_name: ownerProfile?.company_name || ownerProfile?.business_name || defaultName,
+          user_id: user?.id || ''
         }
       });
 

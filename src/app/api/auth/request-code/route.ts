@@ -19,24 +19,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if email exists in G1000 participants table
-    console.log('🔍 Checking g1000_participants table for:', email.toLowerCase());
-    
-    const { data: participant, error: participantError } = await supabaseAdmin
-      .from('g1000_participants')
-      .select('email, name, major, year')
-      .eq('email', email.toLowerCase())
-      .single();
-
-    if (participantError || !participant) {
-      console.log('❌ No participant found for email:', email);
-      return NextResponse.json(
-        { error: 'Email not found. Please make sure you are registered for G1000.' },
-        { status: 404 }
-      );
-    }
-
-    console.log('✅ Found participant:', participant.name);
+    const emailPrefix = email.split('@')[0];
+    const defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
 
     // Simply use signInWithOtp with shouldCreateUser: true
     // This will create the user if they don't exist and send OTP in one step
@@ -47,9 +31,9 @@ export async function POST(request: NextRequest) {
       options: {
         shouldCreateUser: true, // Let Supabase handle user creation
         data: {
-          name: participant.name,
-          major: participant.major,
-          year: participant.year,
+          name: defaultName,
+          major: '',
+          year: '',
           role: 'student'
         }
       }

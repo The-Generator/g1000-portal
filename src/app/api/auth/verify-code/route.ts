@@ -62,19 +62,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get participant details
-    const { data: participant, error: participantError } = await supabaseAdmin
-      .from('g1000_participants')
-      .select('email, name, major, year')
-      .eq('email', email.toLowerCase())
-      .single();
-
-    if (participantError || !participant) {
-      return NextResponse.json(
-        { error: 'Participant not found' },
-        { status: 404 }
-      );
-    }
+    const emailPrefix = email.split('@')[0];
+    const defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
 
     // Check if user already exists in our users table
     const { data: existingUser, error: fetchError } = await supabaseAdmin
@@ -92,7 +81,7 @@ export async function POST(request: NextRequest) {
         .insert({
           id: authData.user.id,
           email: email.toLowerCase(),
-          name: participant.name,
+          name: defaultName,
           role: 'student',
         })
         .select()
@@ -113,8 +102,8 @@ export async function POST(request: NextRequest) {
         .from('student_profiles')
         .insert({
           user_id: user.id,
-          major: participant.major,
-          year: participant.year,
+          major: '',
+          year: '',
           skills: [],
           proof_of_work_urls: [],
         });

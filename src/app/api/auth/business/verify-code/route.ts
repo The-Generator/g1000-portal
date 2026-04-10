@@ -53,8 +53,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get business owner details
-    const { data: user, error: userError } = await supabaseAdmin
+    // Check if user exists in our users table
+    const { data: existingUser, error: fetchError } = await supabaseAdmin
       .from('users')
       .select(`
         *,
@@ -64,11 +64,55 @@ export async function POST(request: NextRequest) {
       .eq('role', 'owner')
       .single();
 
-    if (userError || !user) {
-      console.error('Business owner not found:', userError);
+    let user = existingUser;
+
+    if (fetchError && fetchError.code === 'PGRST116') {
+      const emailPrefix = email.split('@')[0];
+      const defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+
+      const { data: newUser, error: createError } = await supabaseAdmin
+        .from('users')
+        .insert({
+          id: authData.user.id,
+          email: email.toLowerCase(),
+          name: defaultName,
+          role: 'owner',
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('User creation error:', createError);
+        return NextResponse.json(
+          { error: 'Failed to create user account' },
+          { status: 500 }
+        );
+      }
+
+      user = newUser;
+
+      // Create owner profile with pending state
+      const { error: profileError } = await supabaseAdmin
+        .from('business_owner_profiles')
+        .insert({
+          user_id: user.id,
+          company_name: defaultName,
+          business_name: defaultName,
+          contact_name: defaultName,
+          industry_tags: [],
+          is_approved: false
+        });
+
+      if (profileError) {
+        console.error('Profile creation error:', profileError);
+      }
+
+      user.business_owner_profiles = [{ is_approved: false, company_name: defaultName, business_name: defaultName }];
+    } else if (fetchError) {
+      console.error('Business owner fetch error:', fetchError);
       return NextResponse.json(
-        { error: 'Business owner account not found' },
-        { status: 404 }
+        { error: 'Database error' },
+        { status: 500 }
       );
     }
 
