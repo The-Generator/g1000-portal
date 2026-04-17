@@ -1,0 +1,38 @@
+{
+  "featureId": "foundation-dead-code-cleanup",
+  "reviewedAt": "2026-04-17T13:29:26Z",
+  "commitId": "825122b",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "The dead-code cleanup implementation is functionally complete: deleted debug/test pages and scripts are absent, dev-bypass markers are removed, unused dependencies are removed, strict Next.js build flags are enabled, .env.example exists, env fallback hardening is in place, and secret patterns are scrubbed. One documentation mismatch remains non-blocking.",
+    "issues": [
+      {
+        "file": "VERCEL_DEPLOYMENT.md",
+        "line": 44,
+        "severity": "non_blocking",
+        "description": "Deployment docs still state that DEV_MODE can bypass authentication (and require setting DEV_MODE=false), but the feature removed dev-bypass auth paths. This is stale guidance and can confuse operators even though runtime code is hardened."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "fullstack-worker procedure requires type-check/build/lint to pass for every feature, but this foundation feature explicitly noted type-check/build were not expected to pass until foundation-type-fixes. The worker transcript reflects this mismatch and treated the feature as verification-only.",
+      "evidence": "Skill: .factory/skills/fullstack-worker/SKILL.md (Step 4 says validators MUST pass). Feature spec: mission features.json entry foundation-dead-code-cleanup verificationSteps note says type-check/build are NOT expected to pass yet."
+    },
+    {
+      "area": "conventions",
+      "observation": "Feature commit history included unrelated scope additions (new issue template docs and a tracked '~/.cursor/mcp.json' path) alongside secret scrubbing, suggesting missing guidance on keeping feature commits tightly scoped to requested work.",
+      "evidence": "git show --stat 825122b lists issues/Issue Auditor Template.md, issues/Issue Executor Template.md, issues/issue-creation.md, and ~/.cursor/mcp.json in the same commit as feature-related changes."
+    },
+    {
+      "area": "knowledge",
+      "observation": "Stale DEV_MODE guidance persisted in deployment docs after dev-bypass removal; this nuance appears repeatedly in handoff notes and should be captured centrally to prevent reintroduction of bypass-oriented instructions.",
+      "evidence": "VERCEL_DEPLOYMENT.md lines 22/44/51/64 still reference DEV_MODE bypass; handoff for workerSessionId 21d88c4a-037d-449d-aa04-bfc116c29343 also calls this out as a pre-existing docs inconsistency."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "Review passed: required cleanup outcomes are present and no blocking regressions were found. Non-blocking stale DEV_MODE deployment documentation remains, plus shared-state process gaps around skill requirements and feature-commit scope hygiene were observed."
+}

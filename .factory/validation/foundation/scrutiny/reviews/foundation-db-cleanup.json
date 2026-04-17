@@ -1,0 +1,26 @@
+{
+  "featureId": "foundation-db-cleanup",
+  "reviewedAt": "2026-04-17T13:28:51Z",
+  "commitId": "7852b25",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "Reviewed commit 7852b25 and the worker session b8912671-65b5-4a65-ba21-8970ee8965aa. The cleanup commit removes routes/scripts tied to dropped tables and columns, and current grep across src/ shows no remaining references to approved_business_emails, business_owner_auth, verification_codes, tool_colors, g1000_participants, password_hash, or has_set_password. No regressions or correctness issues specific to this feature were identified.",
+    "issues": []
+  },
+  "sharedStateObservations": [
+    {
+      "area": "knowledge",
+      "observation": "Feature metadata is internally inconsistent: the foundation-db-cleanup description says this is a verification-only completion pass with DDL deferred, but expectedBehavior/verificationSteps still require Supabase DDL checks and type-check/build success.",
+      "evidence": "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/features.json:320 says \"Do NOT attempt DDL operations...\", while lines 327-338 still require dropped tables verification and npm type-check/build."
+    },
+    {
+      "area": "skills",
+      "observation": "fullstack-worker SKILL.md has mandatory automated validation steps for every run, which does not fit verification-only features like foundation-db-cleanup and can cause inconsistent skillFeedback reporting.",
+      "evidence": ".factory/skills/fullstack-worker/SKILL.md:37-40 requires type-check/build as MUST; transcript for b8912671-65b5-4a65-ba21-8970ee8965aa shows grep + git status only, with handoff still marking followedProcedure=true at handoff file lines 39-40."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "Pass. The reviewed implementation correctly treated this as a verification-only feature and confirmed cleanup from commit 7852b25; no dropped-table references remain in src/. Shared-state gaps were noted around feature contract consistency and skill procedure fit for verification-only tasks."
+}
