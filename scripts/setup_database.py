@@ -4,13 +4,14 @@ Database Setup Script for G1000 Portal
 Uses Supabase Management API to create tables and seed data
 """
 
+import os
 import requests
 import json
 import time
 from pathlib import Path
 
 # Supabase Management API configuration
-SUPABASE_ACCESS_TOKEN = "sbp_f8b1cf8e84a4e16a53e5d62007785845866d331d"  # Gavins-org
+SUPABASE_ACCESS_TOKEN = os.environ.get("SUPABASE_ACCESS_TOKEN", "")  # set via env
 SUPABASE_API_URL = "https://api.supabase.com/v1"
 
 # Your project details from .env.local
