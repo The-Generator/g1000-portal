@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { signToken } from '@/lib/auth';
 
 // Force dynamic rendering for this route
 export const dynamic = 'force-dynamic';
@@ -34,12 +35,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-
+    const normalizedEmail = email.toLowerCase();
 
     // Check if user already exists in Supabase Auth
     const { data: authUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const existingAuthUser = authUsers?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
-
+    const existingAuthUser = authUsers?.users?.find(
+      (u) => u.email?.toLowerCase() === normalizedEmail
+    );
     if (existingAuthUser) {
       return NextResponse.json(
         { error: 'A user with this email already exists' },
@@ -51,8 +53,8 @@ export async function POST(request: NextRequest) {
     const { data: existingUser } = await supabaseAdmin
       .from('users')
       .select('id')
-      .eq('email', email.toLowerCase())
-      .single();
+      .eq('email', normalizedEmail)
+      .maybeSingle();
 
     if (existingUser) {
       return NextResponse.json(
@@ -61,17 +63,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create user in Supabase Auth
-    const { data: newAuthUser, error: createAuthError } = await supabaseAdmin.auth.admin.createUser({
-      email: email.toLowerCase(),
-      password: password,
-      email_confirm: true, // Auto-confirm email to avoid confirmation emails
-      user_metadata: {
-        name: contactName,
-        role: 'owner',
-        company_name: businessName
-      }
-    });
+    // Create user in Supabase Auth with auto-confirmed email
+    const { data: newAuthUser, error: createAuthError } =
+      await supabaseAdmin.auth.admin.createUser({
+        email: normalizedEmail,
+        password,
+        email_confirm: true,
+        user_metadata: {
+          name: contactName,
+          role: 'owner',
+          company_name: businessName,
+        },
+      });
 
     if (createAuthError || !newAuthUser.user) {
       console.error('Error creating auth user:', createAuthError);
@@ -85,17 +88,16 @@ export async function POST(request: NextRequest) {
     const { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .insert({
-        id: newAuthUser.user.id, // Use the same ID as Supabase Auth
-        email: email.toLowerCase(),
+        id: newAuthUser.user.id,
+        email: normalizedEmail,
         name: contactName,
         role: 'owner',
       })
       .select()
       .single();
 
-    if (userError) {
+    if (userError || !userData) {
       console.error('Error creating user:', userError);
-      // Cleanup: delete the auth user if user creation fails
       await supabaseAdmin.auth.admin.deleteUser(newAuthUser.user.id);
       return NextResponse.json(
         { error: 'Failed to create user account' },
@@ -103,23 +105,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create business owner profile
+    // Create business owner profile (auto-approved)
     const { error: profileError } = await supabaseAdmin
       .from('business_owner_profiles')
       .insert({
         user_id: userData.id,
         company_name: businessName,
-        business_name: businessName, // Also set business_name field
+        business_name: businessName,
         contact_name: contactName,
         industry: industry || null,
         industry_tags: industry ? [industry] : [],
         website_url: website || null,
-        is_approved: false, // Requires admin approval
+        is_approved: true,
       });
 
     if (profileError) {
       console.error('Error creating business profile:', profileError);
-      // Cleanup: delete the user and auth user if profile creation fails
       await supabaseAdmin.from('users').delete().eq('id', userData.id);
       await supabaseAdmin.auth.admin.deleteUser(newAuthUser.user.id);
       return NextResponse.json(
@@ -128,18 +129,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(
-      { 
-        message: 'Business account created successfully. Your account is pending approval.',
+    // Sign JWT and set auth cookie
+    const token = await signToken({
+      userId: userData.id,
+      email: userData.email,
+      role: 'owner',
+    });
+
+    const response = NextResponse.json(
+      {
+        message: 'Business account created successfully.',
         user: {
           id: userData.id,
           email: userData.email,
+          name: userData.name,
           role: userData.role,
-        }
+          is_approved: true,
+        },
       },
       { status: 201 }
     );
 
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    });
+
+    return response;
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(
@@ -147,4 +166,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

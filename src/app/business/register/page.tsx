@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { BuildingOfficeIcon, ArrowLeftIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import GeneratorLogo from '@/components/GeneratorLogo';
-import UnauthorizedBusinessModal from '@/components/UnauthorizedBusinessModal';
 
 export default function BusinessRegisterPage() {
   const router = useRouter();
@@ -25,12 +24,6 @@ export default function BusinessRegisterPage() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
-  const [unauthorizedData, setUnauthorizedData] = useState({
-    email: '',
-    businessName: '',
-    contactName: ''
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,22 +53,11 @@ export default function BusinessRegisterPage() {
       });
 
       if (response.ok) {
-        router.push('/business/login?message=Registration successful! Please sign in.');
+        // Registration sets the auth cookie, so we can go straight to the dashboard
+        router.push('/business/dashboard');
       } else {
         const data = await response.json();
-
-        // Check if it's an unauthorized email error
-        if (response.status === 403 && data.error === 'UNAUTHORIZED_EMAIL') {
-          setUnauthorizedData({
-            email: data.email || formData.email,
-            businessName: data.businessName || formData.businessName,
-            contactName: data.contactName || formData.contactName
-          });
-          setShowUnauthorizedModal(true);
-          setError('');
-        } else {
-          setError(data.error || 'Registration failed');
-        }
+        setError(data.error || 'Registration failed');
       }
     } catch {
       setError('Network error. Please try again.');
@@ -302,14 +284,6 @@ export default function BusinessRegisterPage() {
         </div>
       </div>
 
-      {/* Unauthorized Business Modal */}
-      <UnauthorizedBusinessModal
-        isOpen={showUnauthorizedModal}
-        onClose={() => setShowUnauthorizedModal(false)}
-        email={unauthorizedData.email}
-        businessName={unauthorizedData.businessName}
-        contactName={unauthorizedData.contactName}
-      />
     </div>
   );
 } 
