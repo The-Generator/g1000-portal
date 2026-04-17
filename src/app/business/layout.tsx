@@ -44,9 +44,14 @@ export default function BusinessLayout({
   const [loading, setLoading] = useState(true);
   const [showSignOutMenu, setShowSignOutMenu] = useState(false);
 
+  // Don't show layout for auth pages
+  const isAuthPage = pathname === '/business/login' || pathname === '/business/register';
+
   useEffect(() => {
-    checkAuth();
-  }, []);
+    if (!isAuthPage) {
+      checkAuth();
+    }
+  }, [isAuthPage]);
 
   useEffect(() => {
     if (user && user.role === 'owner') {
@@ -158,9 +163,6 @@ export default function BusinessLayout({
     }
   };
 
-  // Don't show layout for auth pages
-  const isAuthPage = pathname === '/business/login' || pathname === '/business/register';
-  
   if (isAuthPage) {
     return <>{children}</>;
   }
