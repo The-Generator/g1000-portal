@@ -1,0 +1,47 @@
+{
+  "milestone": "auth",
+  "round": 1,
+  "status": "fail",
+  "assertionsSummary": {
+    "total": 11,
+    "passed": 9,
+    "failed": 1,
+    "blocked": 1
+  },
+  "passedAssertions": [
+    "VAL-BAUTH-002",
+    "VAL-BAUTH-003",
+    "VAL-BAUTH-004",
+    "VAL-BAUTH-005",
+    "VAL-SAUTH-001",
+    "VAL-SAUTH-002",
+    "VAL-SAUTH-004",
+    "VAL-SAUTH-005",
+    "VAL-SAUTH-006"
+  ],
+  "failedAssertions": [
+    {
+      "id": "VAL-BAUTH-001",
+      "reason": "POST /api/auth/register/business with contract payload {email,password,name,company} returned HTTP 400 Missing required fields."
+    }
+  ],
+  "blockedAssertions": [
+    {
+      "id": "VAL-SAUTH-003",
+      "blockedBy": "Student registration via /login failed with \"Failed to create user account\", preventing authenticated dashboard validation."
+    }
+  ],
+  "appliedUpdates": [
+    {
+      "target": "user-testing.md",
+      "description": "Added Flow Validator Guidance: agent-browser section with isolation, session, and evidence rules.",
+      "source": "setup"
+    }
+  ],
+  "previousRound": null,
+  "flowReports": [
+    "/Users/skarnz/g1000-portal-1/.factory/validation/auth/user-testing/flows/curl-auth.json",
+    "/Users/skarnz/g1000-portal-1/.factory/validation/auth/user-testing/flows/browser-auth.json"
+  ],
+  "generatedAt": "2026-04-17T14:03:14.889216+00:00"
+}

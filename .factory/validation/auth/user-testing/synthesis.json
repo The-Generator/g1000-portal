@@ -1,0 +1,24 @@
+{
+  "milestone": "auth",
+  "round": 2,
+  "status": "pass",
+  "assertionsSummary": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "blocked": 0
+  },
+  "passedAssertions": [
+    "VAL-BAUTH-001",
+    "VAL-SAUTH-003"
+  ],
+  "failedAssertions": [],
+  "blockedAssertions": [],
+  "appliedUpdates": [],
+  "previousRound": "/Users/skarnz/g1000-portal-1/.factory/validation/auth/user-testing/synthesis.round1.json",
+  "flowReports": [
+    "/Users/skarnz/g1000-portal-1/.factory/validation/auth/user-testing/flows/curl-auth-rerun.json",
+    "/Users/skarnz/g1000-portal-1/.factory/validation/auth/user-testing/flows/browser-auth-rerun.json"
+  ],
+  "generatedAt": "2026-04-17T14:10:20.708663+00:00"
+}

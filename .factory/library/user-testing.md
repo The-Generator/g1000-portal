@@ -59,3 +59,12 @@ For agent-browser tests requiring authenticated state:
 - Use deterministic commands from `validation-contract.md` and capture exact status codes/output.
 - Keep request payloads isolated by using unique test emails when registration endpoints are involved.
 - Save command outputs as evidence under mission evidence paths and summarize pass/fail per assertion in flow JSON.
+
+## Flow Validator Guidance: agent-browser
+
+- Base URL: `http://localhost:3000`
+- Use a dedicated browser session per validator and do not reuse another validator's session/cookies.
+- Use unique test accounts per validator to avoid cross-test collisions in auth and dashboard state.
+- Keep tests scoped to assigned assertions only; avoid editing unrelated data or global settings.
+- Capture screenshots for each UI assertion and save them under the assigned evidence directory.
+- If an auth assertion depends on prior registration, complete registration in the same validator context before login/dashboard checks.

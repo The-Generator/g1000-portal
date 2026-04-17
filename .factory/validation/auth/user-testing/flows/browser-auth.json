@@ -1,0 +1,52 @@
+{
+  "groupId": "browser-auth",
+  "surface": "agent-browser",
+  "assertions": [
+    {
+      "id": "VAL-BAUTH-003",
+      "status": "pass",
+      "reason": "Business user logged in via /business/login with email+password and was redirected to /business/dashboard; dashboard content rendered (not login UI).",
+      "evidence": [
+        "auth/browser-auth/VAL-BAUTH-003-business-dashboard-after-login.png"
+      ]
+    },
+    {
+      "id": "VAL-BAUTH-004",
+      "status": "pass",
+      "reason": "/business/login shows simple email+password login with sign-in button and no OTP or verification-code UI.",
+      "evidence": [
+        "auth/browser-auth/VAL-BAUTH-004-business-login-simple.png"
+      ]
+    },
+    {
+      "id": "VAL-SAUTH-003",
+      "status": "blocked",
+      "reason": "Could not establish authenticated student session: registration attempts on /login returned 'Failed to create user account', and subsequent login attempts returned 'Invalid email or password'.",
+      "evidence": [
+        "auth/browser-auth/VAL-SAUTH-003-student-register-failed.png",
+        "auth/browser-auth/VAL-SAUTH-003-student-dashboard-blocked-login-failed.png"
+      ]
+    },
+    {
+      "id": "VAL-SAUTH-004",
+      "status": "pass",
+      "reason": "/login renders email+password sign-in plus visible register option, with no OTP/verification-code flow present.",
+      "evidence": [
+        "auth/browser-auth/VAL-SAUTH-004-student-login-simple.png"
+      ]
+    }
+  ],
+  "frictions": [],
+  "blockers": [
+    {
+      "description": "Student account creation failed in UI ('Failed to create user account') for unique @babson.edu test accounts, preventing authenticated dashboard validation.",
+      "affectedAssertions": [
+        "VAL-SAUTH-003"
+      ],
+      "quickFixAttempted": "Retried registration with multiple unique emails and attempted login flow; issue persisted."
+    }
+  ],
+  "toolsUsed": [
+    "agent-browser"
+  ]
+}
