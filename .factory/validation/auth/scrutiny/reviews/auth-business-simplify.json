@@ -1,0 +1,33 @@
+{
+  "featureId": "auth-business-simplify",
+  "reviewedAt": "2026-04-17T13:55:05Z",
+  "commitId": "dbf18616ea1bacc346af6064cf234142f05651f0",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "Feature requirements are substantially implemented: business registration/login now use email+password, legacy login-password endpoint and unauthorized modal are removed, and business login UI is simplified to a single-step form. One non-blocking edge-case remains in approval enforcement when a profile row is missing.",
+    "issues": [
+      {
+        "file": "src/app/api/auth/business/login/route.ts",
+        "line": 64,
+        "severity": "non_blocking",
+        "description": "Approval gating is only enforced when a profile row exists (`if (profile && profile.is_approved === false)`). If `business_owner_profiles` is missing for an owner, login still succeeds with `profile: null`, which bypasses the expected approval/profile check in this edge case."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "The `fullstack-worker` skill marks lint as mandatory in automated verification, but this session transcript shows type-check and build only (no `npm run lint`). This can cause inconsistent worker behavior vs. skill expectations.",
+      "evidence": ".factory/skills/fullstack-worker/SKILL.md (Work Procedure §4) says `Run npm run lint -- fix any errors`; transcript skeleton for session `a89c07a8-de20-4d10-be4e-c6cf993fd632` includes `npm run type-check` and `npm run build` commands but no `npm run lint`."
+    },
+    {
+      "area": "skills",
+      "observation": "Agent-browser execution guidance appears underspecified in the worker skill; the worker attempted unsupported CLI forms before succeeding, indicating a discoverability gap.",
+      "evidence": "Transcript skeleton for session `a89c07a8-de20-4d10-be4e-c6cf993fd632` contains `Unknown command: start` and `Unknown command: --headless` during UI verification attempts."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "Reviewed handoff, commit diff, transcript skeleton, and skill guidance for auth-business-simplify. Implementation meets the feature intent and expected behavior overall, with one non-blocking edge-case in login approval enforcement when profile data is missing."
+}
