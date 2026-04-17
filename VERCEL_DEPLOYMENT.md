@@ -1,68 +1,39 @@
-# Vercel Deployment Configuration
+# Vercel Deployment
+
+This project deploys to Vercel from the `main` branch. The production build must succeed with `typescript.ignoreBuildErrors: false` and `eslint.ignoreDuringBuilds: false`.
 
 ## Required Environment Variables
 
-To deploy this application successfully on Vercel, you must configure the following environment variables in your Vercel project settings:
+Configure these in **Vercel → Project → Settings → Environment Variables** for the Production, Preview, and Development environments. Names and expected values are mirrored in [`.env.example`](./.env.example).
 
-### 1. Authentication
-```
-JWT_SECRET=<your-jwt-secret>
-```
-**Important:** This must be the same secret used in your local development to ensure tokens are valid across environments.
+| Variable                           | Purpose                                                                 |
+|------------------------------------|-------------------------------------------------------------------------|
+| `NEXT_PUBLIC_SUPABASE_URL`         | Public Supabase project URL                                             |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`    | Public Supabase anon key (client-side reads)                            |
+| `SUPABASE_SERVICE_ROLE_KEY`        | **Server-only** Supabase service-role key (bypasses RLS; never expose)  |
+| `JWT_SECRET`                       | Random ≥32-char secret used to sign `auth-token` cookies                |
+| `NEXT_PUBLIC_APP_URL`              | Public URL of the deployment (e.g. `https://g1000.vercel.app`)          |
+| `SENDGRID_API_KEY`                 | SendGrid API key for transactional email (optional in Preview)          |
 
-### 2. Supabase Configuration
-```
-NEXT_PUBLIC_SUPABASE_URL=<your-supabase-url>
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
-SUPABASE_SERVICE_ROLE_KEY=<your-supabase-service-role-key>
-```
+Do not commit any of the real values. Pull them from `.env.local` (local dev) or the Vercel dashboard (deployed environments).
 
-### 3. Production Mode (Important!)
-```
-DEV_MODE=false
-```
-**Note:** Set this to `false` for production. When set to `true`, it uses mock authentication for development.
+## Deployment Steps
 
-### 4. App URL (Optional but recommended)
-```
-NEXT_PUBLIC_APP_URL=https://your-vercel-app-url.vercel.app
-```
-Replace with your actual Vercel deployment URL.
-
-## How to Add Environment Variables in Vercel
-
-1. Go to your Vercel project dashboard
-2. Navigate to **Settings** → **Environment Variables**
-3. Add each variable listed above
-4. Make sure to select all environments (Production, Preview, Development)
-5. Click "Save" for each variable
-
-## Important Notes
-
-- **JWT_SECRET**: Must be a strong, random string. The one provided is for this specific project.
-- **SUPABASE_SERVICE_ROLE_KEY**: This is sensitive and should never be exposed to the client.
-- **DEV_MODE**: MUST be set to `false` in production, otherwise authentication will be bypassed.
+1. Push to `main` (or open a PR for a Preview deployment).
+2. Ensure every variable above is set in the target Vercel environment.
+3. Wait for the build to finish; confirm it completes without errors.
+4. Smoke-test the deployment by registering and logging in as a business owner and a student.
 
 ## Troubleshooting
 
-### Issue: Users can't log in / are redirected to wrong login page
-- Verify all environment variables are set correctly
-- Check that `JWT_SECRET` matches between local and production
-- Ensure `DEV_MODE` is set to `false`
+- **Users redirected to the wrong login page** — verify `JWT_SECRET` matches across environments and that `auth-token` cookies are being set. In production, cookies require `secure: true` and a matching domain.
+- **`Dynamic server usage` build errors** — API routes that read cookies or headers must export `const dynamic = 'force-dynamic'`. This is already set on existing routes; apply the same to any new route that reads request state.
+- **`SUPABASE_SERVICE_ROLE_KEY` errors at runtime** — the variable must be defined in every environment where API routes run (Production and Preview at minimum).
 
-### Issue: "Dynamic server usage" errors during build
-- All API routes that use authentication are marked with `export const dynamic = 'force-dynamic'`
-- This is already configured in the codebase
+## Pre-Deploy Checklist
 
-### Issue: Authentication not persisting
-- Check that cookies are being set with `secure: true` in production
-- Verify your domain allows cookies (not blocked by browser)
-
-## Deployment Checklist
-
-- [ ] All environment variables added to Vercel
-- [ ] DEV_MODE set to `false`
-- [ ] JWT_SECRET is configured
-- [ ] Supabase keys are configured
-- [ ] Build succeeds without errors
-- [ ] Authentication works for both student and business portals
+- [ ] All required environment variables set in Vercel for the target environment
+- [ ] `npm run type-check` passes locally
+- [ ] `npm run build` succeeds locally
+- [ ] No secrets committed (see `.env.example` for the canonical variable list)
+- [ ] Business and student login flows verified on the Preview URL

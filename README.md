@@ -4,111 +4,114 @@ A student-business matching platform for the Babson G1000 / AI Innovators Bootca
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 14 (App Router) |
-| Language | TypeScript |
-| UI | React 18, Tailwind CSS, Radix UI, Headless UI |
-| Database | PostgreSQL via Supabase |
-| Auth | Custom JWT (jose) + email OTP for students, email/password for owners & admins |
-| Email | SendGrid (@sendgrid/mail) |
-| Charts | Recharts |
-| Hosting | Vercel |
+| Layer       | Technology                                         |
+|-------------|----------------------------------------------------|
+| Framework   | Next.js 14 (App Router)                            |
+| Language    | TypeScript (strict)                                |
+| UI          | React 18, Tailwind CSS, Radix UI, Headless UI      |
+| Database    | PostgreSQL via Supabase                            |
+| Auth        | Supabase Auth (email + password) + JWT cookies     |
+| Email       | SendGrid (`@sendgrid/mail`)                        |
+| Charts      | Recharts                                           |
+| Hosting     | Vercel                                             |
+
+## Authentication
+
+All three roles authenticate with **email + password**. There is no OTP flow, no email verification step, and no participant whitelist. Passwords are stored exclusively in Supabase Auth; the app issues its own JWT (signed with `JWT_SECRET`) and sets an `auth-token` HTTP-only cookie for session state.
+
+| Role           | Login page        | Registration       | Notes                                                     |
+|----------------|-------------------|--------------------|-----------------------------------------------------------|
+| Student        | `/login`          | `/login` (toggle)  | Only `@babson.edu` emails accepted                        |
+| Business Owner | `/business/login` | `/business/register` | Auto-approved (`is_approved = true`) on registration      |
+| Admin          | `/admin/login`    | seeded manually    | Elevated role checked by middleware                       |
+
+Route protection is enforced by `src/middleware.ts`, which verifies the JWT on every protected path and redirects unauthenticated users to the appropriate login page.
 
 ## Project Structure
 
 ```
 src/
-├── app/                     # Next.js App Router pages & API routes
-│   ├── api/                 # REST API endpoints
-│   │   ├── auth/            # Auth endpoints (login, register, OTP, etc.)
-│   │   ├── admin/           # Admin API routes
-│   │   ├── business/        # Business owner API routes
-│   │   ├── student/         # Student API routes
-│   │   ├── opportunities/   # Public project listings
-│   │   ├── resources/       # Learning resources
-│   │   └── seed/            # Seeding endpoints
-│   ├── admin/               # Admin portal (dashboard, students, resources, whitelist)
-│   ├── business/            # Business portal (dashboard, projects, profile, register)
-│   ├── student/             # Student portal (dashboard, opportunities, applications, profile)
-│   └── login/               # Student login page
+├── app/                     # Next.js App Router
+│   ├── api/
+│   │   ├── auth/
+│   │   │   ├── register/business/     # Business registration
+│   │   │   ├── register/student/      # Student registration
+│   │   │   ├── business/login/        # Business login
+│   │   │   ├── student/login/         # Student login
+│   │   │   ├── admin/login/           # Admin login
+│   │   │   ├── logout/                # Clears auth cookie
+│   │   │   └── me/                    # Current user lookup
+│   │   ├── admin/                     # Admin endpoints
+│   │   ├── business/                  # Business endpoints
+│   │   ├── student/                   # Student endpoints
+│   │   ├── opportunities/             # Public project listings
+│   │   └── resources/                 # Learning resources
+│   ├── admin/                         # Admin portal pages
+│   ├── business/                      # Business portal pages
+│   ├── student/                       # Student portal pages
+│   ├── login/                         # Student login page
+│   └── page.tsx                       # Landing page (routes users to portals)
 ├── components/              # Shared React components
-│   └── ui/                  # Base UI primitives (Button, Card, Input)
-├── lib/                     # Core libraries
-│   ├── supabase.ts          # Supabase client setup & DB type definitions
-│   ├── auth.ts              # JWT signing, verification, password hashing
-│   ├── auth-edge.ts         # Edge-compatible auth (no bcrypt, for middleware)
-│   ├── email.ts             # SendGrid email sending
-│   ├── emailTemplates.ts    # HTML email templates
-│   └── utils.ts             # Helpers (date formatting, transforms, validation)
-├── types/index.ts           # TypeScript interfaces & constants
-├── db/                      # Migration docs
-└── middleware.ts             # Route protection & role-based access control
+│   └── ui/                  # Base UI primitives (Button, Card, Input, …)
+├── lib/
+│   ├── supabase.ts          # Client + admin (service role) clients, DB types
+│   ├── auth.ts              # JWT signing / verification (Node runtime)
+│   ├── auth-edge.ts         # Edge-compatible JWT verification (middleware)
+│   ├── email.ts             # SendGrid transport
+│   ├── emailTemplates.ts    # Transactional HTML templates
+│   └── utils.ts             # Helpers (date formatting, DB ↔ UI transforms)
+├── types/index.ts           # Shared TypeScript interfaces & enums
+└── middleware.ts            # Route protection and role-based redirects
 ```
-
-## Authentication
-
-| Role | Method | Entry Point |
-|------|--------|-------------|
-| Student | Email OTP (@babson.edu only) | `/login` |
-| Business Owner | Email + Password | `/business/login` (register at `/business/register`) |
-| Admin | Email + Password | `/admin/login` |
-
-Sessions are JWT tokens stored in HTTP-only cookies (24h expiry). Middleware enforces role-based route protection.
 
 ## Database
 
 PostgreSQL hosted on Supabase. Core tables:
 
-- `users` -- all accounts (id, email, name, role)
-- `student_profiles` -- bio, major, year, skills, availability, links
-- `business_owner_profiles` -- company info, approval status
-- `projects` -- opportunity listings with type, compensation, skills, deadlines
-- `applications` -- student applications with status workflow
-- `g1000_participants` -- student eligibility whitelist
-- `resources` / `support_documents` -- learning materials
-- `verification_codes` -- OTP codes with TTL
+- `users` — all accounts (id, email, name, role); mirrors Supabase Auth user IDs
+- `student_profiles` — major, year, skills, availability, links, bio
+- `business_owner_profiles` — company info, contact, `is_approved`
+- `projects` — opportunity listings (type, compensation, skills, deadlines, status)
+- `applications` — student → project applications with status workflow
+- `resources` / `support_documents` — learning materials surfaced to students
+
+Passwords live in Supabase Auth only; the `users` table does not store password hashes.
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- Supabase project
-- SendGrid API key (for emails)
+- A Supabase project (URL, anon key, service role key)
+- A SendGrid API key (for transactional email, optional in local dev)
 
 ### Setup
 
 ```bash
 npm install
+cp .env.example .env.local
+# then fill in .env.local with your credentials
 ```
 
-Create `.env.local`:
+See `.env.example` for the full list of required variables.
 
-```
-NEXT_PUBLIC_SUPABASE_URL=<your-supabase-url>
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
-SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
-JWT_SECRET=<random-secret>
-SENDGRID_API_KEY=<your-sendgrid-key>
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-### Development
+### Development Commands
 
 ```bash
-npm run dev        # Start dev server
-npm run build      # Production build
-npm run lint       # ESLint
-npm run type-check # TypeScript check
+npm run dev         # Start Next.js dev server on http://localhost:3000
+npm run build       # Production build
+npm run start       # Run the production build
+npm run lint        # ESLint
+npm run type-check  # TypeScript (tsc --noEmit)
 ```
+
+## Architecture Overview
+
+- **API routes** (`src/app/api/**`) run on the Node runtime, use the Supabase service-role client (`supabaseAdmin`) for privileged operations, and declare `export const dynamic = 'force-dynamic'` when they read cookies or DB state.
+- **Middleware** (`src/middleware.ts`) runs on the Edge runtime and uses `auth-edge.ts` to verify JWTs without Node-only dependencies (no bcrypt on the edge).
+- **Auth flow** — on registration the API creates a user in Supabase Auth (`email_confirm: true`), mirrors the row into `users`, creates the role-specific profile row, signs a JWT, and sets the `auth-token` cookie. On login the API calls `signInWithPassword`, reloads the user row, and issues a fresh JWT.
+- **UI** uses Tailwind with the custom tokens in `tailwind.config.js` (`generator-dark`, `generator-green`, `generator-gold`, `primary-*`). Shared primitives live in `src/components/ui/`.
 
 ## Deployment
 
-Deployed on Vercel. Push to `main` triggers automatic deployment. Environment variables must be set in Vercel dashboard.
-
----
-
-## Known Issues & Technical Debt
-
-See `FOUNDATIONAL_ISSUES.md` for a detailed audit of security vulnerabilities, architecture problems, and cleanup tasks.
+Deployed on Vercel. Pushes to `main` trigger automatic deployments. See `VERCEL_DEPLOYMENT.md` for required environment variables and deployment notes.
