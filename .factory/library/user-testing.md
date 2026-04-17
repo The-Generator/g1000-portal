@@ -46,3 +46,16 @@ For agent-browser tests requiring authenticated state:
 - After dev server: ~10.5GB available
 - Max concurrent validators: **4** (4 * 300MB = 1.2GB, well within budget)
 - Rationale: Conservative limit due to system memory pressure observed (3.3M pages in compressor)
+
+**Surface: curl-shell**
+- Resource cost: very low (single process + HTTP requests)
+- Max concurrent validators: **2**
+- Rationale: avoid log interleaving and shared-state collisions while still parallelizing read-only endpoint checks.
+
+## Flow Validator Guidance: curl-shell
+
+- Base URL: `http://localhost:3000`
+- Stay within HTTP/API and shell validation scope only; do not mutate application business data beyond temporary validation requests.
+- Use deterministic commands from `validation-contract.md` and capture exact status codes/output.
+- Keep request payloads isolated by using unique test emails when registration endpoints are involved.
+- Save command outputs as evidence under mission evidence paths and summarize pass/fail per assertion in flow JSON.
