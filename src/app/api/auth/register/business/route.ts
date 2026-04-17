@@ -89,7 +89,6 @@ export async function POST(request: NextRequest) {
         email: email.toLowerCase(),
         name: contactName,
         role: 'owner',
-        has_set_password: true // They're setting password during registration
       })
       .select()
       .single();

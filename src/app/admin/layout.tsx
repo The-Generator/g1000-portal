@@ -9,7 +9,6 @@ import {
   UsersIcon,
   ArrowRightOnRectangleIcon,
   VideoCameraIcon,
-  AcademicCapIcon,
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import GeneratorLogo from '@/components/GeneratorLogo';
@@ -110,16 +109,6 @@ export default function AdminLayout({
       name: 'Business Approvals',
       href: '/admin',
       icon: UsersIcon,
-    },
-    {
-      name: 'Student Whitelist',
-      href: '/admin/students',
-      icon: AcademicCapIcon,
-    },
-    {
-      name: 'Email Whitelist',
-      href: '/admin/whitelist',
-      icon: ShieldCheckIcon,
     },
     {
       name: 'Video Resources',

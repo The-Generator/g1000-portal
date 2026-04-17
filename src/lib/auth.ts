@@ -49,52 +49,6 @@ export async function verifyPassword(password: string, hashedPassword: string): 
   return await bcrypt.compare(password, hashedPassword);
 }
 
-export async function generateVerificationCode(): Promise<string> {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-export async function storeVerificationCode(email: string, code: string) {
-  const hashedCode = await hashPassword(code);
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
-  
-  // Store in a temporary table or cache
-  const { error } = await supabaseAdmin
-    .from('verification_codes')
-    .upsert({
-      email,
-      code: hashedCode,
-      expires_at: expiresAt.toISOString(),
-    });
-  
-  if (error) throw error;
-}
-
-export async function verifyVerificationCode(email: string, code: string): Promise<boolean> {
-  const { data, error } = await supabaseAdmin
-    .from('verification_codes')
-    .select('code, expires_at')
-    .eq('email', email)
-    .single();
-
-  if (error || !data) return false;
-  
-  // Check if code has expired
-  if (new Date() > new Date(data.expires_at)) {
-    // Clean up expired code
-    await supabaseAdmin.from('verification_codes').delete().eq('email', email);
-    return false;
-  }
-
-  const isValid = await verifyPassword(code, data.code);
-  
-  if (isValid) {
-    // Clean up used code
-    await supabaseAdmin.from('verification_codes').delete().eq('email', email);
-  }
-  
-  return isValid;
-}
-
 export function getTokenFromRequest(request: NextRequest): string | null {
   // Try to get token from Authorization header
   const authHeader = request.headers.get('authorization');
