@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { ProjectForm } from '@/types';
 import { getTodayDate, getNextWeekDate } from '@/lib/utils';
@@ -146,7 +147,14 @@ export default function NewProjectPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+          <Breadcrumbs
+            homeHref="/business/dashboard"
+            items={[
+              { label: 'Projects', href: '/business/projects' },
+              { label: 'New Opportunity' },
+            ]}
+          />
           <div className="flex flex-col sm:flex-row sm:items-center py-4 sm:py-6 gap-3">
             <Link href="/business/dashboard">
               <Button variant="ghost" size="sm" className="mr-0 sm:mr-4 hover:bg-gray-100">

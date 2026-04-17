@@ -12,6 +12,7 @@ import {
   ExclamationTriangleIcon,
   PlayCircleIcon
 } from '@heroicons/react/24/outline';
+import { OnboardingBanner } from '@/components/ui/OnboardingBanner';
 
 interface DashboardStats {
   applicationsSubmitted: number;
@@ -69,6 +70,37 @@ export default function StudentDashboard() {
   return (
     <div className="bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Welcome header */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-generator-dark">
+            Welcome{user?.name ? `, ${user.name.split(' ')[0]}` : ''}!
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Here's your snapshot -- browse opportunities, track applications, and manage interviews.
+          </p>
+        </div>
+
+        {/* First-time user onboarding */}
+        <OnboardingBanner
+          storageKey="g1000-onboarding-student-dashboard"
+          heading="How the G1000 Portal works"
+          intro="Three quick steps to land your first AI project or internship."
+          steps={[
+            {
+              title: 'Complete your profile',
+              description: 'Add your major, skills, and availability so business owners can evaluate fit.',
+            },
+            {
+              title: 'Browse opportunities',
+              description: 'Explore AI projects and internships posted by vetted Babson-aligned businesses.',
+            },
+            {
+              title: 'Apply & interview',
+              description: 'Submit applications with one click, then manage interviews from your dashboard.',
+            },
+          ]}
+        />
+
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card hover>

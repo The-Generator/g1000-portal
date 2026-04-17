@@ -88,31 +88,53 @@ export default function HomePage() {
             This student-run networking platform enables small business owners to post AI projects/internship opportunities for Babson students. Babson College does not represent student services.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/login">
-              <Button
-                size="xl"
-                variant="outline"
-                icon={<AcademicCapIcon className="w-5 h-5" />}
-                className="group"
-              >
-                <span>I'm a Student</span>
+          <p className="text-base font-medium text-gray-700 mb-6">
+            Get started -- choose your portal:
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            <Link
+              href="/login"
+              data-testid="cta-student"
+              aria-label="Student portal login"
+              className="group flex flex-col items-center text-center p-8 rounded-2xl bg-white border-2 border-generator-green shadow-soft hover:shadow-xl hover:-translate-y-1 transition-all"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-generator-green flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                <AcademicCapIcon className="w-9 h-9 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-generator-dark mb-2">I'm a Student</h3>
+              <p className="text-gray-600 mb-4">
+                Babson students: log in or register with your <span className="font-semibold">@babson.edu</span> email to browse opportunities.
+              </p>
+              <span className="inline-flex items-center text-generator-green font-semibold">
+                Student Login
                 <ArrowRightIcon className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              </span>
             </Link>
 
-            <Link href="/business/login">
-              <Button
-                size="xl"
-                variant="outline"
-                icon={<BuildingOfficeIcon className="w-5 h-5" />}
-                className="group"
-              >
-                <span>I'm a Business</span>
+            <Link
+              href="/business/login"
+              data-testid="cta-business"
+              aria-label="Business owner portal login"
+              className="group flex flex-col items-center text-center p-8 rounded-2xl bg-white border-2 border-generator-dark shadow-soft hover:shadow-xl hover:-translate-y-1 transition-all"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-generator-dark flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                <BuildingOfficeIcon className="w-9 h-9 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-generator-dark mb-2">I'm a Business Owner</h3>
+              <p className="text-gray-600 mb-4">
+                Post AI projects and internship opportunities to reach qualified Babson students.
+              </p>
+              <span className="inline-flex items-center text-generator-dark font-semibold">
+                Business Login
                 <ArrowRightIcon className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              </span>
             </Link>
           </div>
+
+          <p className="text-sm text-gray-500 mt-5">
+            New here? Registration is available on each portal's login page.
+          </p>
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 max-w-4xl mx-auto">

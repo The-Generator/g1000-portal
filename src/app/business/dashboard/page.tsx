@@ -25,6 +25,7 @@ import {
 import { Project } from '@/types';
 import { transformProject, getIndustryTags } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import { OnboardingBanner } from '@/components/ui/OnboardingBanner';
 
 interface BusinessProfile {
   companyName?: string;
@@ -287,6 +288,27 @@ export default function BusinessDashboardPage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* First-time user onboarding */}
+        <OnboardingBanner
+          storageKey="g1000-onboarding-business-dashboard"
+          heading="How the G1000 Portal works"
+          intro="Three quick steps to connect with qualified Babson students."
+          steps={[
+            {
+              title: 'Complete your business profile',
+              description: 'Add your company name, logo, and contact info so students know who they are applying to.',
+            },
+            {
+              title: 'Post your first opportunity',
+              description: 'Describe the project, required skills, timeline, and compensation. Students apply directly from the portal.',
+            },
+            {
+              title: 'Review & interview',
+              description: 'Review applicants on the dashboard, schedule interviews, and select the best student for the role.',
+            },
+          ]}
+        />
+
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
