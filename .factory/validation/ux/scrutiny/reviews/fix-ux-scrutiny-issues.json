@@ -1,0 +1,21 @@
+{
+  "featureId": "fix-ux-scrutiny-issues",
+  "reviewedAt": "2026-04-17T14:48:52Z",
+  "commitId": "ea34338fe77b2a8e474ccea508a76cbd0d8b5acd",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "The fix commit directly addresses the prior failure and the two non-blocking UX items: `/business/profile` is now present in business navigation, custom duration input now writes through to `formData.estimatedDuration`, and edit-flow compensation type initialization no longer forces `paid-hourly`.",
+    "issues": []
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "The `fullstack-worker` skill requires running lint in automated verification, but this fix session reports only type-check and build while still marking `followedProcedure: true`.",
+      "evidence": "Skill file `.factory/skills/fullstack-worker/SKILL.md` (Work Procedure §4) includes `npm run lint`; handoff `2026-04-17T14-46-41-596Z__fix-ux-scrutiny-issues__f297819d-f8c1-44b5-8fc0-91912024e7d6.json` lists only `npm run type-check` and `npm run build` in `verification.commandsRun`."
+    }
+  ],
+  "addressesFailureFrom": "/Users/skarnz/g1000-portal-1/.factory/validation/ux/scrutiny/reviews/ux-navigation-guidance.json",
+  "summary": "Pass. The fix adequately resolves the original blocking navigation defect from `ux-navigation-guidance` and implements the scoped non-blocking UX corrections without introducing new blocking issues in the reviewed diffs."
+}
