@@ -1,0 +1,39 @@
+{
+  "featureId": "ux-opportunity-form",
+  "reviewedAt": "2026-04-17T14:41:04Z",
+  "commitId": "d3bb8ff",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "The feature largely meets the UX goals: shared sectioned forms are implemented for both new/edit flows, help text and responsive grouping are present, defaults are applied, and API shape remains intact. I found two non-blocking correctness/behavior gaps in edge cases.",
+    "issues": [
+      {
+        "file": "src/components/business/OpportunityFormSections.tsx",
+        "line": 630,
+        "severity": "non_blocking",
+        "description": "When Estimated Duration is set to \"Custom\", the free-text input is stored only in local state (`customDuration`) and is never propagated back to `formData.estimatedDuration` (see lines 630, 646-647). Both submit handlers send only `formData.estimatedDuration` (`src/app/business/projects/new/page.tsx:108`, `src/app/business/projects/[id]/edit/page.tsx:163`), so custom text is lost and \"Custom\" is submitted instead."
+      },
+      {
+        "file": "src/app/business/projects/[id]/edit/page.tsx",
+        "line": 69,
+        "severity": "non_blocking",
+        "description": "Edit mode defaults missing compensation type to `paid-hourly` (`projectData.compensationType || 'paid-hourly'`). For legacy records lacking a stored value, opening and saving can silently convert unspecified/experience compensation to hourly, which may misstate compensation intent."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "The `fullstack-worker` skill procedure requires lint as part of mandatory automated verification, but this worker run did not include lint while `skillFeedback.followedProcedure` was marked true.",
+      "evidence": ".factory/skills/fullstack-worker/SKILL.md (Step 4 includes `npm run lint`); handoff verification.commandsRun lists only `npm run type-check`, `npm run build`, and a curl check."
+    },
+    {
+      "area": "conventions",
+      "observation": "Mission AGENTS says \"No `any` types\", but new feature code introduced explicit `as any` casts, suggesting convention enforcement/clarity gaps in shared state.",
+      "evidence": "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/AGENTS.md (TypeScript section); src/components/business/OpportunityFormSections.tsx:702 and :828 use `as any`."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "Reviewed feature ux-opportunity-form for commit d3bb8ff using handoff, diff, transcript skeleton, and skill/convention docs. Implementation satisfies the requested UX redesign and preserves API flow, with two non-blocking edge-case issues (custom duration persistence and edit fallback compensation default) plus shared-state observations around skill-procedure/validation alignment and convention enforcement."
+}

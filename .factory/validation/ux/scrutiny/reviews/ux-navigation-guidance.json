@@ -1,0 +1,33 @@
+{
+  "featureId": "ux-navigation-guidance",
+  "reviewedAt": "2026-04-17T14:40:04Z",
+  "commitId": "1762e9264e324f8770aa927312eeb7321c13974c",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "fail",
+  "codeReview": {
+    "summary": "The feature improves landing-page CTAs, adds onboarding banners, and adds a breadcrumb to the new-opportunity page, but it does not fully satisfy the navigation-completeness requirement for portal nav bars.",
+    "issues": [
+      {
+        "file": "src/app/business/layout.tsx",
+        "line": 218,
+        "severity": "blocking",
+        "description": "Business sidebar/nav is still missing a direct link to the key `/business/profile` page. The feature explicitly required ensuring all key pages are present in student/business nav and adding missing links; this nav array only includes Dashboard, Projects, New Project, and Resources."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "The `fullstack-worker` skill states lint is part of required automated verification, but this worker run only shows type-check and build. This mismatch is recurring and can cause inconsistent `followedProcedure` reporting.",
+      "evidence": ".factory/skills/fullstack-worker/SKILL.md (Work Procedure §4) requires `npm run lint`; transcript skeleton for session `41cfc7a6-4791-40da-87ad-f2140aeb77d9` shows `npm run type-check` and `npm run build` but no lint command."
+    },
+    {
+      "area": "conventions",
+      "observation": "There is no shared-state definition of what constitutes 'key pages' for each portal nav, which likely contributed to leaving `/business/profile` out of the nav list despite this feature's explicit requirement.",
+      "evidence": "Mission AGENTS and .factory/library/architecture.md document auth/data conventions but not nav completeness rules; feature contract in mission features specifies nav completeness for student/business layouts while `src/app/business/layout.tsx` nav omits `/business/profile` (profile appears only as a top-right account link)."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "Fail with one blocking issue: business portal navigation remains incomplete relative to feature requirements because `/business/profile` is not included in the nav bar/sidebar links."
+}

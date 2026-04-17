@@ -1,0 +1,26 @@
+{
+  "featureId": "cross-flow-verification",
+  "reviewedAt": "2026-04-17T14:41:04Z",
+  "commitId": "e6eaead",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "Reviewed commit e6eaead and related handoff/transcript evidence. The BusinessLayout auth-page guard fix in src/app/business/layout.tsx addresses the /business/register redirect loop and aligns with the feature’s auth-flow verification scope. No blocking correctness issues were found in the changed code.",
+    "issues": []
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "Skill procedure and observed execution are misaligned on lint validation: the fullstack-worker skill says to run `npm run lint`, but this worker session did not run lint while still marking followedProcedure=true in handoff feedback.",
+      "evidence": ".factory/skills/fullstack-worker/SKILL.md (\"4. Verify -- Automated\" includes `npm run lint`); mission worker transcript skeleton for session 74326672-8239-44c4-9bd6-0fb74c208af8 contains `npm run type-check` and `npm run build` but no `npm run lint`; handoff.skillFeedback.followedProcedure is true."
+    },
+    {
+      "area": "knowledge",
+      "observation": "There is a persistent type/schema mismatch for project compensation enums that surfaced during this feature and is not reflected in shared library docs; this should be captured to reduce repeat debugging.",
+      "evidence": "src/lib/supabase.ts:154,171,188 type `compensation_type` as 'stipend'|'equity'|'credit', while project/API/UI code uses values like 'paid-hourly', 'paid-fixed', and 'experience' (e.g., src/app/api/business/projects/route.ts:192 and src/types/index.ts:79). The same mismatch is noted in the feature handoff discoveredIssues."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "Pass. The committed fix correctly prevents auth checking on /business/register and resolves the reported redirect-loop bug. Verification evidence for business/student journeys and unauth redirects is present in handoff/transcript. Shared-state follow-ups were identified for skill/procedure consistency and enum mismatch documentation."
+}

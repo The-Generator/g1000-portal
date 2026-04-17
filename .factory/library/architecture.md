@@ -87,3 +87,7 @@ Browser → Next.js API Route → supabaseAdmin (service role) → PostgreSQL
 3. **Business approval** — Owners must have `is_approved = true` (auto-set on registration).
 4. **Babson email** — Students must register with an `@babson.edu` address.
 5. **Passwords in Auth only** — Passwords are stored exclusively in Supabase Auth, never in the `users` table.
+
+## Known Implementation Gap
+
+- **Compensation enum drift:** `src/lib/supabase.ts` still types `projects.compensation_type` as legacy values (`stipend`, `equity`, `credit`) while active API/UI flows use `paid-hourly`, `paid-fixed`, and `experience` (see `src/app/api/business/projects/route.ts` and `src/types/index.ts`). Treat this as an existing mismatch during project/compensation changes until schema/types are aligned.
