@@ -63,7 +63,18 @@ export function OpportunityFormSections({
   const [customSkill, setCustomSkill] = useState('');
   const [industryInput, setIndustryInput] = useState('');
   const [customIndustry, setCustomIndustry] = useState('');
-  const [customDuration, setCustomDuration] = useState('');
+  // Track custom duration mode separately so the select can show "Custom"
+  // while formData.estimatedDuration holds the actual typed value.
+  const isPresetDuration = (d?: string) =>
+    !!d && (DURATION_OPTIONS as readonly string[]).includes(d) && d !== 'Custom';
+  const [customDurationMode, setCustomDurationMode] = useState(() => {
+    const d = formData.estimatedDuration;
+    return !!d && !isPresetDuration(d);
+  });
+  const [customDuration, setCustomDuration] = useState(() => {
+    const d = formData.estimatedDuration;
+    return !!d && !isPresetDuration(d) && d !== 'Custom' ? d : '';
+  });
 
   const addSkill = (skill: string) => {
     const trimmed = skill.trim();
@@ -624,11 +635,17 @@ export function OpportunityFormSections({
                   </label>
                   <select
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-generator-green focus:border-generator-green"
-                    value={formData.estimatedDuration || ''}
+                    value={customDurationMode ? 'Custom' : (formData.estimatedDuration || '')}
                     onChange={e => {
                       const v = e.target.value;
-                      setFormData(prev => ({ ...prev, estimatedDuration: v }));
-                      if (v !== 'Custom') setCustomDuration('');
+                      if (v === 'Custom') {
+                        setCustomDurationMode(true);
+                        setFormData(prev => ({ ...prev, estimatedDuration: customDuration }));
+                      } else {
+                        setCustomDurationMode(false);
+                        setCustomDuration('');
+                        setFormData(prev => ({ ...prev, estimatedDuration: v }));
+                      }
                     }}
                   >
                     <option value="">Not specified</option>
@@ -638,13 +655,17 @@ export function OpportunityFormSections({
                       </option>
                     ))}
                   </select>
-                  {formData.estimatedDuration === 'Custom' && (
+                  {customDurationMode && (
                     <input
                       type="text"
                       className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-generator-green focus:border-generator-green"
                       placeholder="Enter custom duration..."
                       value={customDuration}
-                      onChange={e => setCustomDuration(e.target.value)}
+                      onChange={e => {
+                        const v = e.target.value;
+                        setCustomDuration(v);
+                        setFormData(prev => ({ ...prev, estimatedDuration: v }));
+                      }}
                     />
                   )}
                 </div>

@@ -66,7 +66,9 @@ export default function EditProjectPage() {
           estimatedDuration:
             (projectData as any).duration || (projectData as any).estimatedDuration || '',
           estimatedHoursPerWeek: (projectData as any).estimatedHoursPerWeek || '',
-          compensationType: projectData.compensationType || 'paid-hourly',
+          // Preserve existing compensation type from project data.
+          // Only new projects default to 'paid-hourly'; for edits we keep whatever was saved.
+          compensationType: projectData.compensationType,
           compensationValue: projectData.compensationValue || '',
           budget: (projectData as any).budget || '',
           deliverables:

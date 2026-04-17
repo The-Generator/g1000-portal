@@ -10,7 +10,8 @@ import {
   PlusIcon,
   ArrowRightOnRectangleIcon,
   FolderIcon,
-  BookOpenIcon
+  BookOpenIcon,
+  UserCircleIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import GeneratorLogo from '@/components/GeneratorLogo';
@@ -235,6 +236,11 @@ export default function BusinessLayout({
       name: 'Resources',
       href: '/business/resources',
       icon: BookOpenIcon,
+    },
+    {
+      name: 'Profile',
+      href: '/business/profile',
+      icon: UserCircleIcon,
     },
   ];
 
