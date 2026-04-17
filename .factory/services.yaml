@@ -1,0 +1,14 @@
+commands:
+  install: npm install
+  build: npm run build
+  typecheck: npm run type-check
+  lint: npm run lint
+  dev: npm run dev
+
+services:
+  web:
+    start: PORT=3000 npm run dev
+    stop: lsof -ti :3000 | xargs kill -9 2>/dev/null || true
+    healthcheck: curl -sf http://localhost:3000
+    port: 3000
+    depends_on: []
