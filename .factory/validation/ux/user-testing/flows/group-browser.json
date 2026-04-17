@@ -1,0 +1,70 @@
+{
+  "surface": "agent-browser",
+  "toolsUsed": ["agent-browser"],
+  "assertions": [
+    {
+      "id": "VAL-UX-001",
+      "status": "pass",
+      "reason": "`/business/projects/new` showed grouped sections (Project Basics, Scope & Requirements, Compensation & Timeline, Location) with helper/instructional text near inputs.",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-UX-001-opportunity-form-grouping.png"
+      ]
+    },
+    {
+      "id": "VAL-UX-002",
+      "status": "pass",
+      "reason": "Business and student portals both exposed clear sidebar navigation with key destinations (dashboard, projects/opportunities, resources, profile).",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-UX-002-business-navigation.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-UX-002-student-navigation.png"
+      ]
+    },
+    {
+      "id": "VAL-UX-003",
+      "status": "pass",
+      "reason": "Landing page presented distinct student and business-owner entry CTAs/pathways.",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-UX-003-landing-page.png"
+      ]
+    },
+    {
+      "id": "VAL-UX-004",
+      "status": "pass",
+      "reason": "First-time dashboards displayed onboarding guidance panels ('How the G1000 Portal works' with step-by-step instructions) for both business and student users.",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-UX-004-business-dashboard-guidance.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-UX-004-student-dashboard-guidance.png"
+      ]
+    },
+    {
+      "id": "VAL-CROSS-001",
+      "status": "pass",
+      "reason": "Business E2E flow completed: registration succeeded, login redirected to dashboard, opportunity form submitted, and new opportunity appeared on dashboard. Relevant network calls observed include POST /api/auth/business/login and GET /api/business/projects; no console errors were reported.",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-CROSS-001-business-register-page.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-CROSS-001-business-dashboard-after-register.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-CROSS-001-business-login-page.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-CROSS-001-business-login-dashboard.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-CROSS-001-business-opportunity-form.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-CROSS-001-business-opportunity-submit-attempt.png"
+      ]
+    },
+    {
+      "id": "VAL-CROSS-002",
+      "status": "pass",
+      "reason": "Student E2E flow completed: registration succeeded, login reached student dashboard, opportunities list loaded, and opportunity detail page content loaded. Relevant network calls observed include POST /api/auth/register/student, POST /api/auth/student/login, GET /api/opportunities, and GET /api/opportunities/{id}; no console errors were reported.",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-CROSS-002-student-auth-page.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-CROSS-002-student-register-result.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-CROSS-002-student-login-result.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-CROSS-002-opportunities-list.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/ux/group-browser/VAL-CROSS-002-opportunity-detail.png"
+      ]
+    }
+  ],
+  "frictions": [
+    "Immediately after some navigation/actions, `agent-browser get url` briefly returned the previous route; a follow-up URL/text check confirmed final page state.",
+    "`agent-browser network requests` lists request methods/URLs but not HTTP status codes, so endpoint success was inferred from successful flow transitions and rendered UI states."
+  ],
+  "blockers": []
+}

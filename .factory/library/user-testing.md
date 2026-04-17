@@ -68,3 +68,4 @@ For agent-browser tests requiring authenticated state:
 - Keep tests scoped to assigned assertions only; avoid editing unrelated data or global settings.
 - Capture screenshots for each UI assertion and save them under the assigned evidence directory.
 - If an auth assertion depends on prior registration, complete registration in the same validator context before login/dashboard checks.
+- After navigation/form submissions, re-check URL/page text once before asserting final state because immediate reads can briefly show the previous route.
