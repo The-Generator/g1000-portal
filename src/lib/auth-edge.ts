@@ -9,7 +9,7 @@ if (!process.env.JWT_SECRET) {
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
-interface JWTPayload extends JoseJWTPayload {
+export interface JWTPayload extends JoseJWTPayload {
   userId: string;
   email: string;
   role: 'student' | 'owner' | 'admin';

@@ -635,7 +635,7 @@ export default function BusinessProjectDetailPage({ params }: { params: { id: st
                       {label} Rating
                     </label>
                     <select
-                      value={reviewForm[key as keyof typeof reviewForm]}
+                      value={reviewForm[key as 'reliabilityRating' | 'communicationRating' | 'initiativeRating' | 'qualityRating' | 'impactRating']}
                       onChange={(e) => setReviewForm({ ...reviewForm, [key]: parseInt(e.target.value) })}
                       className="w-full p-2 border rounded-lg"
                     >

@@ -438,7 +438,7 @@ function LoginForm() {
                   type="submit"
                   className="w-full"
                   loading={loading}
-                  disabled={!email || (hasPassword && !password)}
+                  disabled={!email || (hasPassword === true && !password)}
                 >
                   {hasPassword ? 'Sign In' : 'Continue'}
                 </Button>

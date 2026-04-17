@@ -39,6 +39,9 @@ export interface StudentProfile {
 
 export interface BusinessOwnerProfile {
   userId: string;
+  // Convenience field for the owner's display name (falls back to contactName
+  // or the joined user's name depending on the source).
+  name?: string;
   companyName: string;
   contactName?: string;
   phone?: string;
@@ -69,6 +72,8 @@ export interface Project {
   currentSoftwareTools?: string;
   painPoints?: string;
   industryTags: string[];
+  // `duration` is the raw DB column; `estimatedDuration` is the UI/API alias.
+  duration?: string;
   estimatedDuration?: string;
   estimatedHoursPerWeek?: string;
   compensationType?: 'paid-hourly' | 'paid-stipend' | 'paid-fixed' | 'paid-salary' | 'equity' | 'experience' | 'other';
@@ -85,15 +90,20 @@ export interface Project {
   updatedAt: string;
   owner?: BusinessOwnerProfile;
   applications?: Application[];
+  // Optionally set server-side when the viewing student has applied to this
+  // project; used by the opportunities listing to show application status.
+  userApplication?: Application | null;
 }
 
 export interface Application {
   id: string;
+  // Legacy alias used by some UI code paths.
+  applicationId?: string;
   projectId: string;
   studentId: string;
   coverNote: string;
   proofOfWorkUrl: string;
-  status: 'submitted' | 'underReview' | 'interviewScheduled' | 'accepted' | 'rejected';
+  status: 'submitted' | 'underReview' | 'interviewScheduled' | 'accepted' | 'rejected' | 'withdrawn';
   submittedAt: string;
   invitedAt?: string;
   rejectedAt?: string;
@@ -180,7 +190,7 @@ export interface ProfileForm {
 
 // Constants
 export const ROLES = ['student', 'owner', 'admin'] as const;
-export const APPLICATION_STATUSES = ['submitted', 'underReview', 'interviewScheduled', 'accepted', 'rejected'] as const;
+export const APPLICATION_STATUSES = ['submitted', 'underReview', 'interviewScheduled', 'accepted', 'rejected', 'withdrawn'] as const;
 export const PROJECT_STATUSES = ['open', 'closed'] as const;
 export const COMPENSATION_TYPES = [
   'paid-hourly',

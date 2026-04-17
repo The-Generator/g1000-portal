@@ -25,7 +25,9 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   }
 });
 
-// Database type definitions
+// Database type definitions — mirrors the 14 tables that remain after the
+// foundation DB cleanup. Kept deliberately loose (no overly strict unions on
+// nullable columns) so queries with partial selects still type-check.
 export type Database = {
   public: {
     Tables: {
@@ -200,7 +202,7 @@ export type Database = {
           student_id: string;
           cover_note: string;
           proof_of_work_url: string;
-          status: 'submitted' | 'underReview' | 'interviewScheduled' | 'accepted' | 'rejected';
+          status: 'submitted' | 'underReview' | 'interviewScheduled' | 'accepted' | 'rejected' | 'withdrawn';
           submitted_at: string;
           invited_at: string | null;
           rejected_at: string | null;
@@ -214,7 +216,7 @@ export type Database = {
           student_id: string;
           cover_note: string;
           proof_of_work_url: string;
-          status?: 'submitted' | 'underReview' | 'interviewScheduled' | 'accepted' | 'rejected';
+          status?: 'submitted' | 'underReview' | 'interviewScheduled' | 'accepted' | 'rejected' | 'withdrawn';
           submitted_at?: string;
           invited_at?: string | null;
           rejected_at?: string | null;
@@ -228,7 +230,7 @@ export type Database = {
           student_id?: string;
           cover_note?: string;
           proof_of_work_url?: string;
-          status?: 'submitted' | 'underReview' | 'interviewScheduled' | 'accepted' | 'rejected';
+          status?: 'submitted' | 'underReview' | 'interviewScheduled' | 'accepted' | 'rejected' | 'withdrawn';
           submitted_at?: string;
           invited_at?: string | null;
           rejected_at?: string | null;
@@ -269,6 +271,185 @@ export type Database = {
           category?: string;
           duration?: string;
           video_url?: string | null;
+          created_at?: string;
+        };
+      };
+      admins: {
+        Row: {
+          id: string;
+          email: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          email: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          created_at?: string;
+        };
+      };
+      project_comments: {
+        Row: {
+          id: string;
+          update_id: string;
+          user_id: string;
+          content: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          update_id: string;
+          user_id: string;
+          content: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          update_id?: string;
+          user_id?: string;
+          content?: string;
+          created_at?: string;
+        };
+      };
+      project_overviews: {
+        Row: {
+          id: string;
+          application_id: string;
+          summary: string | null;
+          goals: string | null;
+          owner_contact_email: string | null;
+          useful_links: unknown | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          application_id: string;
+          summary?: string | null;
+          goals?: string | null;
+          owner_contact_email?: string | null;
+          useful_links?: unknown | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          application_id?: string;
+          summary?: string | null;
+          goals?: string | null;
+          owner_contact_email?: string | null;
+          useful_links?: unknown | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      project_reflections: {
+        Row: {
+          id: string;
+          application_id: string;
+          student_id: string;
+          reflection: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          application_id: string;
+          student_id: string;
+          reflection: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          application_id?: string;
+          student_id?: string;
+          reflection?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      project_reviews: {
+        Row: {
+          id: string;
+          application_id: string;
+          reliability_rating: number;
+          communication_rating: number;
+          initiative_rating: number;
+          quality_rating: number;
+          impact_rating: number;
+          review_note: string | null;
+          deliverables_completed: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          application_id: string;
+          reliability_rating: number;
+          communication_rating: number;
+          initiative_rating: number;
+          quality_rating: number;
+          impact_rating: number;
+          review_note?: string | null;
+          deliverables_completed?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          application_id?: string;
+          reliability_rating?: number;
+          communication_rating?: number;
+          initiative_rating?: number;
+          quality_rating?: number;
+          impact_rating?: number;
+          review_note?: string | null;
+          deliverables_completed?: boolean;
+          created_at?: string;
+        };
+      };
+      project_updates: {
+        Row: {
+          id: string;
+          application_id: string;
+          student_id: string;
+          title: string;
+          content: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          application_id: string;
+          student_id: string;
+          title: string;
+          content: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          application_id?: string;
+          student_id?: string;
+          title?: string;
+          content?: string;
+          created_at?: string;
+        };
+      };
+      resource_categories: {
+        Row: {
+          id: number;
+          name: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          name?: string;
           created_at?: string;
         };
       };

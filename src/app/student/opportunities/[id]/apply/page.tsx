@@ -514,7 +514,6 @@ export default function ApplyPage() {
       />
 
       {/* Email Notification Modal */}
-      {showEmailModal && opportunity && console.log('Rendering ApplicationEmailModal', { showEmailModal, opportunity: opportunity.title })}
       {showEmailModal && opportunity && (
         <ApplicationEmailModal
           isOpen={true}

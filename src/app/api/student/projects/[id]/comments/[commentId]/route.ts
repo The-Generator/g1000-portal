@@ -18,7 +18,13 @@ export async function DELETE(
     const { id: applicationId, commentId } = params;
 
     // First check if the comment exists and belongs to the user
-    const { data: comment, error: commentError } = await supabaseAdmin
+    type CommentRow = {
+      id: string;
+      user_id: string;
+      update_id: string;
+      project_updates: { application_id: string; student_id: string } | null;
+    };
+    const { data: commentRaw, error: commentError } = await supabaseAdmin
       .from('project_comments')
       .select(`
         id,
@@ -32,9 +38,21 @@ export async function DELETE(
       .eq('id', commentId)
       .single();
 
-    if (commentError || !comment) {
+    if (commentError || !commentRaw) {
       return NextResponse.json({ error: 'Comment not found' }, { status: 404 });
     }
+
+    const projectUpdateRaw = (commentRaw as unknown as { project_updates: unknown }).project_updates;
+    const projectUpdate = (Array.isArray(projectUpdateRaw) ? projectUpdateRaw[0] : projectUpdateRaw) as
+      | { application_id: string; student_id: string }
+      | null;
+    const rawTyped = commentRaw as unknown as Omit<CommentRow, 'project_updates'>;
+    const comment: CommentRow = {
+      id: rawTyped.id,
+      user_id: rawTyped.user_id,
+      update_id: rawTyped.update_id,
+      project_updates: projectUpdate,
+    };
 
     // Check if user can delete this comment
     // User can delete if they:

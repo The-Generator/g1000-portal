@@ -2,5 +2,17 @@
   "extends": [
     "next/core-web-vitals",
     "next/typescript"
-  ]
+  ],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": ["warn", {
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_",
+      "caughtErrorsIgnorePattern": "^_|^error$|^err$|^e$"
+    }],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "react/no-unescaped-entities": "warn",
+    "prefer-const": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "@next/next/no-img-element": "warn"
+  }
 }

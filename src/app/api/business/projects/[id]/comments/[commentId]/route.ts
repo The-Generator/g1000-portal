@@ -11,7 +11,7 @@ export async function DELETE(
   try {
     const user = await getUserFromRequest(request);
 
-    if (!user || user.role !== 'business_owner') {
+    if (!user || user.role !== 'owner') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -30,7 +30,7 @@ export async function DELETE(
     }
 
     // Verify the comment exists and get its details
-    const { data: comment, error: commentError } = await supabaseAdmin
+    const { data: commentRaw, error: commentError } = await supabaseAdmin
       .from('project_comments')
       .select(`
         id,
@@ -45,12 +45,21 @@ export async function DELETE(
       .eq('id', commentId)
       .single();
 
-    if (commentError || !comment) {
+    if (commentError || !commentRaw) {
       return NextResponse.json({ error: 'Comment not found' }, { status: 404 });
     }
 
+    const projectUpdateRaw = (commentRaw as unknown as { project_updates: unknown }).project_updates;
+    const projectUpdate = (Array.isArray(projectUpdateRaw) ? projectUpdateRaw[0] : projectUpdateRaw) as
+      | { application_id: string; applications: { project_id: string } | { project_id: string }[] | null }
+      | null;
+    const applicationsRaw = projectUpdate?.applications ?? null;
+    const application = (Array.isArray(applicationsRaw) ? applicationsRaw[0] : applicationsRaw) as
+      | { project_id: string }
+      | null;
+
     // Verify the comment belongs to this project
-    const applicationProjectId = comment.project_updates?.applications?.project_id;
+    const applicationProjectId = application?.project_id;
     if (applicationProjectId !== projectId) {
       return NextResponse.json({ error: 'Comment does not belong to this project' }, { status: 400 });
     }

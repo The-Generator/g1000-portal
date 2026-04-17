@@ -429,7 +429,7 @@ export default function BusinessDashboardPage() {
                       {project.compensationType && project.compensationType !== 'experience' && (
                         <div className="flex items-center text-sm text-gray-500">
                           <CurrencyDollarIcon className="w-4 h-4 mr-2" />
-                          <span>{getCompensationDisplay(project.compensationType, project.compensationValue)}</span>
+                          <span>{getCompensationDisplay(project.compensationType, project.compensationValue ?? '')}</span>
                         </div>
                       )}
                       <div className="flex items-center text-sm text-gray-500">
