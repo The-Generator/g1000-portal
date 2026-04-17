@@ -37,19 +37,7 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.toLowerCase();
 
-    // Check if user already exists in Supabase Auth
-    const { data: authUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const existingAuthUser = authUsers?.users?.find(
-      (u) => u.email?.toLowerCase() === normalizedEmail
-    );
-    if (existingAuthUser) {
-      return NextResponse.json(
-        { error: 'A user with this email already exists' },
-        { status: 409 }
-      );
-    }
-
-    // Check if user exists in our users table
+    // Check if user exists in our users table (fast path)
     const { data: existingUser } = await supabaseAdmin
       .from('users')
       .select('id')
@@ -78,6 +66,23 @@ export async function POST(request: NextRequest) {
 
     if (createAuthError || !newAuthUser.user) {
       console.error('Error creating auth user:', createAuthError);
+      // Detect duplicate email error from Supabase Auth and return 409
+      const errMsg = (createAuthError?.message || '').toLowerCase();
+      const errCode = (createAuthError as { code?: string } | null)?.code || '';
+      const errStatus = (createAuthError as { status?: number } | null)?.status;
+      const isDuplicate =
+        errCode === 'email_exists' ||
+        errStatus === 422 ||
+        errMsg.includes('already been registered') ||
+        errMsg.includes('already registered') ||
+        errMsg.includes('already exists') ||
+        errMsg.includes('duplicate');
+      if (isDuplicate) {
+        return NextResponse.json(
+          { error: 'A user with this email already exists' },
+          { status: 409 }
+        );
+      }
       return NextResponse.json(
         { error: 'Failed to create authentication account' },
         { status: 500 }
