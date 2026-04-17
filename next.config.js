@@ -1,14 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false, // Disable to prevent double renders that cause input focus loss
+  reactStrictMode: true,
   images: {
     domains: ['supabase.co', 'github.com', 'linkedin.com'],
   },
   eslint: {
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: false
   },
   typescript: {
-    ignoreBuildErrors: true
+    ignoreBuildErrors: false
   }
 }
 

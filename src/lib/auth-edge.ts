@@ -3,9 +3,11 @@ import { NextRequest } from 'next/server';
 import { SignJWT, jwtVerify, JWTPayload as JoseJWTPayload } from 'jose';
 import { supabaseAdmin } from './supabase';
 
-const secret = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'fallback-secret-key-for-development-only'
-);
+if (!process.env.JWT_SECRET) {
+  throw new Error('Missing required environment variable: JWT_SECRET');
+}
+
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 interface JWTPayload extends JoseJWTPayload {
   userId: string;

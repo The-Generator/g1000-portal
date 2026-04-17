@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from './supabase';
 import bcrypt from 'bcryptjs';
 
-const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret-key-for-development-only');
+if (!process.env.JWT_SECRET) {
+  throw new Error('Missing required environment variable: JWT_SECRET');
+}
+
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export interface JWTPayload {
   userId: string;

@@ -1,8 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl) {
+  throw new Error('Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL');
+}
+if (!supabaseAnonKey) {
+  throw new Error('Missing required environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY');
+}
+if (!supabaseServiceKey) {
+  throw new Error('Missing required environment variable: SUPABASE_SERVICE_ROLE_KEY');
+}
 
 // Client-side Supabase client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

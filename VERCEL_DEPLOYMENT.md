@@ -6,15 +6,15 @@ To deploy this application successfully on Vercel, you must configure the follow
 
 ### 1. Authentication
 ```
-JWT_SECRET=0zKR7I+UHYq9cmRLd2e+2MwiDw9zQ4wnVfKsbYYX52MLwYkDbo+ZTdxTe6NFwkmr8aBLuZEE3FgLiE6+KffcAQ==
+JWT_SECRET=<your-jwt-secret>
 ```
 **Important:** This must be the same secret used in your local development to ensure tokens are valid across environments.
 
 ### 2. Supabase Configuration
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://genufllbsvczadzhukor.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlbnVmbGxic3ZjemFkemh1a29yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NDQ5OTQsImV4cCI6MjA3MDUyMDk5NH0.jZn-nYmaIcIMVtsUHtDZEzZA09oTfJHblB2Nn_TLBq8
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlbnVmbGxic3ZjemFkemh1a29yIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDk0NDk5NCwiZXhwIjoyMDcwNTIwOTk0fQ.5eZWs5gF61w2YNp6EiKoncR52RTjNfYo5kvOxuMIQGA
+NEXT_PUBLIC_SUPABASE_URL=<your-supabase-url>
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<your-supabase-service-role-key>
 ```
 
 ### 3. Production Mode (Important!)
