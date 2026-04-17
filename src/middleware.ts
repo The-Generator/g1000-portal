@@ -4,17 +4,24 @@ import { getUserFromRequest } from '@/lib/auth-edge';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip middleware for API routes that don't need auth, static files, and public paths
+  // Only intercept routes under known protected prefixes. Any other route
+  // (including deleted/unknown pages) should fall through so Next.js can
+  // return a proper 404 instead of a redirect to login.
+  const isProtectedPrefix =
+    pathname.startsWith('/student') ||
+    pathname.startsWith('/business') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/api/student') ||
+    pathname.startsWith('/api/students') ||
+    pathname.startsWith('/api/business') ||
+    pathname.startsWith('/api/admin');
+
+  if (!isProtectedPrefix) {
+    return NextResponse.next();
+  }
+
+  // Public auth pages within protected prefixes
   if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api/auth') ||
-    pathname.startsWith('/api/seed') ||
-    pathname.startsWith('/api/test-email') ||
-    pathname === '/test-email' ||
-    pathname.includes('.') ||
-    pathname === '/' ||
-    pathname === '/login' ||
-    pathname === '/student-coming-soon' ||
     pathname === '/business/register' ||
     pathname === '/business/login' ||
     pathname === '/admin/login'
