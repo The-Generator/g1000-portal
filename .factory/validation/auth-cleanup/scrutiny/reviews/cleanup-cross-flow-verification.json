@@ -1,0 +1,33 @@
+{
+  "featureId": "cleanup-cross-flow-verification",
+  "reviewedAt": "2026-04-26T23:47:11Z",
+  "commitId": "f422eca",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "fail",
+  "codeReview": {
+    "summary": "The reviewed commit only updates a /login docstring and does not provide evidence that the feature's required authenticated cross-flow verifications were executed. The handoff explicitly states those browser walkthroughs were not exercised, so required expected behavior remains unverified for this feature.",
+    "issues": [
+      {
+        "file": "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/handoffs/2026-04-26T23-45-06-278Z__cleanup-cross-flow-verification__1cfd6d87-29c6-4c68-a90c-984b7d86a0c2.json",
+        "line": 12,
+        "severity": "blocking",
+        "description": "Feature requires end-to-end authenticated flows and role/session checks (features.json expectedBehavior and verificationSteps), but handoff says these authenticated browser walkthroughs were not exercised due to missing stable credentials; therefore core acceptance criteria for cleanup-cross-flow-verification were not completed."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "knowledge",
+      "observation": "Mission/shared docs define a test-account strategy but do not provide concrete stable credentials or a deterministic seeded-session path for authenticated cross-flow verification in this milestone, causing required checks to be deferred.",
+      "evidence": ".factory/library/user-testing.md describes creating users via setup, while handoff records authenticated checks as undone (handoff line 12) and interactiveChecks empty (line 121)."
+    },
+    {
+      "area": "skills",
+      "observation": "fullstack-worker procedure requires agent-browser for UI-flow verification but does not clearly define how to handle verification-only features when authenticated credentials are unavailable; worker reported followedProcedure=true while skipping required browser flow assertions from the feature contract.",
+      "evidence": ".factory/skills/fullstack-worker/SKILL.md line 23 requires agent-browser; feature verificationSteps in features.json include multiple agent-browser flows; handoff shows no interactive checks."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "FAIL: commit f422eca only removes legacy login-path text in a comment. Required authenticated cross-flow verification outcomes for cleanup-cross-flow-verification were explicitly left undone, so feature acceptance criteria are not fully met."
+}

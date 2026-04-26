@@ -1,0 +1,54 @@
+{
+  "milestone": "auth-cleanup",
+  "round": 1,
+  "status": "fail",
+  "validatorsRun": {
+    "test": {
+      "passed": true,
+      "command": "npm run type-check && npm run build",
+      "exitCode": 0
+    },
+    "typecheck": {
+      "passed": true,
+      "command": "npm run type-check",
+      "exitCode": 0
+    },
+    "lint": {
+      "passed": true,
+      "command": "npm run lint",
+      "exitCode": 0
+    }
+  },
+  "reviewsSummary": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "failedFeatures": [
+      "cleanup-cross-flow-verification"
+    ]
+  },
+  "blockingIssues": [
+    {
+      "featureId": "cleanup-cross-flow-verification",
+      "severity": "blocking",
+      "description": "Feature contract required authenticated end-to-end cross-flow and role/session verification, but reviewer found handoff evidence explicitly left these browser checks unexecuted due to missing stable credentials."
+    }
+  ],
+  "appliedUpdates": [],
+  "suggestedGuidanceUpdates": [
+    {
+      "target": "AGENTS.md",
+      "suggestion": "Define a deterministic authenticated validation strategy (stable test credentials or seeded-session procedure) for milestones requiring end-to-end authenticated browser flows.",
+      "evidence": "Review for cleanup-cross-flow-verification reports required authenticated checks were deferred due to unavailable stable credentials, leaving acceptance criteria unverified.",
+      "isSystemic": false
+    },
+    {
+      "target": ".factory/skills/fullstack-worker/SKILL.md",
+      "suggestion": "Clarify handling for verification-only features when authenticated credentials are unavailable: require explicit escalation instead of completing feature with skipped required flow assertions.",
+      "evidence": "Reviewer observed worker marked followedProcedure=true while no required authenticated agent-browser checks were performed.",
+      "isSystemic": false
+    }
+  ],
+  "rejectedObservations": [],
+  "previousRound": null
+}
