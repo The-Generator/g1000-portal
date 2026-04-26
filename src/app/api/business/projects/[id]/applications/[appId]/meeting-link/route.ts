@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { getUserFromRequest } from '@/lib/auth';
+import { getSessionUser } from '@/lib/supabase/server';
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string; applicationId: string } }
 ) {
   try {
-    const currentUser = await getUserFromRequest(request);
+    const currentUser = await getSessionUser();
     if (!currentUser || currentUser.role !== 'owner') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

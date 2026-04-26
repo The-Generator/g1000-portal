@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/lib/auth';
+import { getSessionUser } from '@/lib/supabase/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -9,7 +9,7 @@ export async function DELETE(
   { params }: { params: { id: string; commentId: string } }
 ) {
   try {
-    const user = await getUserFromRequest(request);
+    const user = await getSessionUser();
 
     if (!user || user.role !== 'student') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

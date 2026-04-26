@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { getUserFromRequest } from '@/lib/auth-edge';
+import { getSessionUser } from '@/lib/supabase/server';
 import { ProjectForm } from '@/types';
 
 // Force dynamic rendering for this route
@@ -11,7 +11,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = await getUserFromRequest(request);
+    const user = await getSessionUser();
 
     if (!user || user.role !== 'owner') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -210,7 +210,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = await getUserFromRequest(request);
+    const user = await getSessionUser();
 
     if (!user || user.role !== 'owner') {
       console.error('Authentication failed - User:', user);
@@ -375,7 +375,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = await getUserFromRequest(request);
+    const user = await getSessionUser();
     
     if (!user || user.role !== 'owner') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

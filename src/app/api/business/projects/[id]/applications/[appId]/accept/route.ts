@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { getUserFromRequest } from '@/lib/auth';
+import { getSessionUser } from '@/lib/supabase/server';
 
 export async function POST(
   request: NextRequest,
@@ -8,7 +8,7 @@ export async function POST(
 ) {
   try {
     console.log('Accept endpoint called with params:', params);
-    const user = await getUserFromRequest(request);
+    const user = await getSessionUser();
 
     if (!user || user.role !== 'owner') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

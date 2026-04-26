@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/lib/auth';
+import { NextResponse } from 'next/server';
+import { getSessionUser } from '@/lib/supabase/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const user = await getUserFromRequest(request);
-    
+    const user = await getSessionUser();
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
         .select('*')
         .eq('user_id', user.id)
         .single();
-      
+
       // Transform snake_case to camelCase for frontend
       if (profile) {
         businessProfile = {
@@ -50,4 +50,4 @@ export async function GET(request: NextRequest) {
     console.error('User fetch error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-} 
+}

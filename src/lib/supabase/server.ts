@@ -44,7 +44,7 @@ export type SessionUser = {
  * row, or `null` if the request has no session OR the user has not yet
  * completed onboarding (no `users` row exists).
  *
- * Replacement for the legacy `getUserFromRequest()` helper. Uses
+ * Replacement for the legacy session lookup helper. Uses
  * `supabase.auth.getUser()` (network-verified) — never `getSession()`.
  */
 export async function getSessionUser(): Promise<SessionUser | null> {

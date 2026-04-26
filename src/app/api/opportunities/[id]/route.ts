@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { getUserFromRequest } from '@/lib/auth';
+import { getSessionUser } from '@/lib/supabase/server';
 
 export async function GET(
   request: NextRequest,
@@ -10,7 +10,7 @@ export async function GET(
     // Try to get current user (student) if logged in — optional for public viewing
     let currentUserId: string | null = null;
     try {
-      const user = await getUserFromRequest(request);
+      const user = await getSessionUser();
       if (user && user.role === 'student') currentUserId = user.id;
     } catch { /* not authenticated */ }
 

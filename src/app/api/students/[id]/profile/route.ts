@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/lib/auth-edge';
+import { getSessionUser } from '@/lib/supabase/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
 console.log('Student profile route file loaded');
@@ -14,7 +14,7 @@ export async function GET(
   console.log('URL:', request.url);
   
   try {
-    const user = await getUserFromRequest(request);
+    const user = await getSessionUser();
     
     // Debug logging
     console.log('Student Profile API - Auth check:', {

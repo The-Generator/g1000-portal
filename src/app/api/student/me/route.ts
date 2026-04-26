@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/lib/auth';
+import { getSessionUser } from '@/lib/supabase/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { AvailabilitySlot } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request);
+    const user = await getSessionUser();
     
     if (!user || user.role !== 'student') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
