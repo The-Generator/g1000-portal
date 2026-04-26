@@ -1,0 +1,117 @@
+{
+  "groupId": "group-onboarding",
+  "surface": "agent-browser",
+  "results": [
+    {
+      "assertionId": "VAL-LOGIN-003",
+      "status": "fail",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/login003-after-register-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/login003-after-register-state.png"
+      ],
+      "reason": "Email/password registration completed but landed on / instead of /onboarding."
+    },
+    {
+      "assertionId": "VAL-ONBOARD-001",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/no-role-protected-route-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/no-role-protected-route-state.png"
+      ],
+      "reason": "A newly registered no-role user hitting /student/dashboard was redirected to /onboarding."
+    },
+    {
+      "assertionId": "VAL-ONBOARD-002",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/nonbabson-onboarding-options.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/onboarding-open-attempt-snapshot.txt"
+      ],
+      "reason": "Onboarding renders both Student and Business Owner role options."
+    },
+    {
+      "assertionId": "VAL-ONBOARD-003",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/no-role-after-student-select-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/api-auth-me-no-role-after-student-select.json",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/no-role-after-student-select-state.png"
+      ],
+      "reason": "Babson user selected Student, reached /student/dashboard, and /api/auth/me returned role=student."
+    },
+    {
+      "assertionId": "VAL-ONBOARD-004",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/nonbabson-after-business-click-state.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/nonbabson-after-business-setup-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/api-auth-me-owner-after-setup.json"
+      ],
+      "reason": "Business Owner path completed via required setup step, then reached /business/dashboard with owner role and business profile present."
+    },
+    {
+      "assertionId": "VAL-ONBOARD-005",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/nonbabson-after-student-click-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/nonbabson-after-student-click-body.txt"
+      ],
+      "reason": "Non-babson user selecting Student stayed on /onboarding and saw the @babson.edu restriction error."
+    },
+    {
+      "assertionId": "VAL-ONBOARD-006",
+      "status": "fail",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/existing-student2-login-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/existing-owner-login-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/api-auth-me-existing-owner-login.json"
+      ],
+      "reason": "Existing users authenticated successfully but post-login landed on / instead of direct role dashboard."
+    },
+    {
+      "assertionId": "VAL-ONBOARD-007",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/existing-student-onboarding-access-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/existing-owner-onboarding-access-url.txt"
+      ],
+      "reason": "Users with roles navigating to /onboarding were redirected to /student/dashboard or /business/dashboard."
+    },
+    {
+      "assertionId": "VAL-ONBOARD-008",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/no-role-onboarding-body.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/no-role-protected-route-state.png"
+      ],
+      "reason": "No-role signed-in user could access /onboarding and saw role-selection UI."
+    },
+    {
+      "assertionId": "VAL-ONBOARD-009",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/nonbabson-after-business-click-state.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/api-auth-me-owner-after-setup.json"
+      ],
+      "reason": "Business onboarding required company/contact entry and resulting businessProfile includes companyName."
+    },
+    {
+      "assertionId": "VAL-ONBOARD-010",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/nonbabson-after-student-click-body.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/nonbabson-after-business-setup-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-onboarding/nonbabson-after-business-setup-state.png"
+      ],
+      "reason": "After Student rejection, same non-babson user selected Business Owner and completed setup to reach /business/dashboard."
+    }
+  ],
+  "frictions": [
+    "Post-auth navigation frequently lands on / even when session is valid; role dashboard redirect is not immediate on email/password login."
+  ],
+  "blockers": [],
+  "toolsUsed": [
+    "agent-browser",
+    "curl"
+  ]
+}

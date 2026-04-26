@@ -38,3 +38,11 @@ Dev server: 821 MB + 5 agents * 300 MB = 2.3 GB → well within budget
 - Keep checks read-only: file reads, `curl`, `npm run type-check`, and `npm run build`.
 - Do not mutate business data or auth tables during this milestone validation pass.
 - For assertions requiring authenticated user context, mark as `blocked` if no stable test credential/session path exists in this milestone.
+
+## Flow Validator Guidance: agent-browser
+
+- Use non-default browser sessions only. Prefix sessions with the active worker session id.
+- Use the shared app instance at `http://localhost:3000`; do not start additional servers.
+- Keep each validator inside its assigned assertion scope and test accounts.
+- Capture screenshots or URL/state evidence for each assertion outcome.
+- If credentials or external OAuth requirements block validation, mark the assertion `blocked` with a concrete reason.

@@ -1,0 +1,55 @@
+{
+  "groupId": "group-session",
+  "surface": "agent-browser",
+  "results": [
+    {
+      "assertionId": "VAL-LOGIN-002",
+      "status": "fail",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-002-login-page.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-002-post-signin-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-002-post-signin-url-page.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-002-existing-user-after-signin-dashboard.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-002-session-cookie-redacted.txt"
+      ],
+      "reason": "Email/password sign-in established session (cookie present) and allowed dashboard access, but post-login redirect landed on '/' instead of direct role dashboard redirect."
+    },
+    {
+      "assertionId": "VAL-LOGIN-007",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-007-after-logout-login-page.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-007-protected-route-redirects-login.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-007-post-logout-cookies-redacted.txt"
+      ],
+      "reason": "Logout returned browser to /login and subsequent protected route access redirected back to /login; post-logout cookie list is empty."
+    },
+    {
+      "assertionId": "VAL-LOGIN-009",
+      "status": "fail",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-009-grep-evidence.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-009-change-password-runtime-headers.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-009-change-password-runtime-body.txt"
+      ],
+      "reason": "Profile pages still call '/api/auth/change-password' while no change-password auth route exists; runtime request returns HTTP 404."
+    },
+    {
+      "assertionId": "VAL-LOGIN-010",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-010-student-redirect-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-010-business-redirect-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-010-admin-redirect-url.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-010-student-redirect-login.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-010-business-redirect-login.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-010-admin-redirect-login.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-session/VAL-LOGIN-010-layout-grep-evidence.txt"
+      ],
+      "reason": "Unauthenticated access to student/business/admin portals redirected to /login, and layout code only references '/login' (no '/business/login' or '/admin/login' targets)."
+    }
+  ],
+  "frictions": [],
+  "blockers": [],
+  "toolsUsed": ["agent-browser", "grep"]
+}

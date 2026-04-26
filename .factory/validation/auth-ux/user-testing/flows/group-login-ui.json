@@ -1,0 +1,63 @@
+{
+  "groupId": "group-login-ui",
+  "surface": "agent-browser",
+  "results": [
+    {
+      "assertionId": "VAL-CLEAN-005",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-login-ui/VAL-CLEAN-005-ls.txt"
+      ],
+      "reason": "Legacy login/register directories are absent: src/app/business/login, src/app/business/register, and src/app/admin/login all return 'No such file or directory'."
+    },
+    {
+      "assertionId": "VAL-CLEAN-008",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-login-ui/VAL-CLEAN-008-grep.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-login-ui/VAL-CLEAN-008-redirect-targets-grep.txt"
+      ],
+      "reason": "A broad string grep finds one legacy-path mention in a comment, but redirect-target grep is empty, indicating no hardcoded redirects to /business/login or /admin/login in executable routing code."
+    },
+    {
+      "assertionId": "VAL-LOGIN-001",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-login-ui/VAL-LOGIN-001-login-page.png"
+      ],
+      "reason": "The /login page renders Sign In/Register tabs, a Google sign-in button, and email/password inputs in one unified login UI."
+    },
+    {
+      "assertionId": "VAL-LOGIN-004",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-login-ui/VAL-LOGIN-004-oauth-redirect.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-login-ui/VAL-LOGIN-004-url.txt"
+      ],
+      "reason": "Clicking 'Sign in with Google' redirects to Supabase OAuth authorize endpoint with provider=google and callback to /auth/callback."
+    },
+    {
+      "assertionId": "VAL-LOGIN-005",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-login-ui/VAL-LOGIN-005-wrong-password.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-login-ui/VAL-LOGIN-005-body-text.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-login-ui/VAL-LOGIN-005-url.txt"
+      ],
+      "reason": "Invalid credentials keep the user on /login and show the inline error text 'Invalid email or password.'"
+    },
+    {
+      "assertionId": "VAL-LOGIN-006",
+      "status": "pass",
+      "evidence": [
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-login-ui/VAL-LOGIN-006-duplicate-email.png",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-login-ui/VAL-LOGIN-006-body-text.txt",
+        "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d/evidence/auth-ux/group-login-ui/VAL-LOGIN-006-url.txt"
+      ],
+      "reason": "Duplicate registration attempt stays on /login and shows 'An account with that email already exists. Try signing in.'"
+    }
+  ],
+  "frictions": [],
+  "blockers": [],
+  "toolsUsed": ["agent-browser", "grep", "ls"]
+}
