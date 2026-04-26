@@ -1,95 +1,124 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/lib/auth-edge';
+import { NextResponse, type NextRequest } from 'next/server';
+import { updateSession } from '@/lib/supabase/middleware';
+import { supabaseAdmin } from '@/lib/supabase';
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+const PUBLIC_PATHS = new Set(['/', '/login', '/auth/callback', '/onboarding']);
 
-  // Only intercept routes under known protected prefixes. Any other route
-  // (including deleted/unknown pages) should fall through so Next.js can
-  // return a proper 404 instead of a redirect to login.
-  const isProtectedPrefix =
+function isPublicPath(pathname: string): boolean {
+  if (PUBLIC_PATHS.has(pathname)) return true;
+  // Allow OAuth callback subpaths (e.g. /auth/callback?code=...) and /auth/* helpers
+  if (pathname.startsWith('/auth/')) return true;
+  return false;
+}
+
+function isProtectedPath(pathname: string): boolean {
+  return (
     pathname.startsWith('/student') ||
     pathname.startsWith('/business') ||
     pathname.startsWith('/admin') ||
     pathname.startsWith('/api/student') ||
     pathname.startsWith('/api/students') ||
     pathname.startsWith('/api/business') ||
-    pathname.startsWith('/api/admin');
+    pathname.startsWith('/api/admin')
+  );
+}
 
-  if (!isProtectedPrefix) {
-    return NextResponse.next();
+function isApiPath(pathname: string): boolean {
+  return pathname.startsWith('/api/');
+}
+
+function unauthorizedResponse(pathname: string, request: NextRequest): NextResponse {
+  if (isApiPath(pathname)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  const url = request.nextUrl.clone();
+  url.pathname = '/login';
+  url.search = '';
+  return NextResponse.redirect(url);
+}
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Refresh the Supabase session for every request. This MUST run first so
+  // cookies are kept in sync regardless of which branch we take below.
+  const { supabaseResponse, user } = await updateSession(request);
+
+  // Public paths: allow through without any auth checks.
+  if (isPublicPath(pathname)) {
+    return supabaseResponse;
   }
 
-  // Public auth pages within protected prefixes
-  if (
-    pathname === '/business/register' ||
-    pathname === '/business/login' ||
-    pathname === '/admin/login'
-  ) {
-    return NextResponse.next();
+  // Routes outside the protected prefixes (e.g. unknown paths) fall through
+  // so Next.js can return a proper 404 instead of forcing a redirect.
+  if (!isProtectedPath(pathname)) {
+    return supabaseResponse;
   }
 
-  // Check authentication for protected routes
-  const user = await getUserFromRequest(request);
-
-  // Redirect unauthenticated users to appropriate login page
+  // No session → unauthorized.
   if (!user) {
-    if (pathname.startsWith('/admin')) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
-    }
-    if (pathname.startsWith('/business')) {
-      return NextResponse.redirect(new URL('/business/login', request.url));
-    }
-    // Default to student login for other routes
-    return NextResponse.redirect(new URL('/login', request.url));
+    return unauthorizedResponse(pathname, request);
   }
 
-  // Role-based route protection
+  // Look up the user's role from the `users` table. A missing row means the
+  // user has authenticated with Supabase but has not completed onboarding.
+  const { data: profile } = await supabaseAdmin
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  const role = profile?.role as 'student' | 'owner' | 'admin' | undefined;
+
+  if (!role) {
+    // No role yet → send them to onboarding (API requests get 401).
+    if (isApiPath(pathname)) {
+      return NextResponse.json({ error: 'Onboarding required' }, { status: 401 });
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = '/onboarding';
+    url.search = '';
+    return NextResponse.redirect(url);
+  }
+
+  // Role-based route enforcement.
   if (pathname.startsWith('/student')) {
-    if (user.role !== 'student') {
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
+    if (role !== 'student') return unauthorizedResponse(pathname, request);
   } else if (pathname.startsWith('/business')) {
-    if (user.role !== 'owner') {
-      return NextResponse.redirect(new URL('/business/login', request.url));
-    }
+    if (role !== 'owner') return unauthorizedResponse(pathname, request);
   } else if (pathname.startsWith('/admin')) {
-    if (user.role !== 'admin') {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
-    }
-  }
-
-  // API route protection
-  // Note: /api/students routes can be accessed by business owners viewing student profiles
-  if (pathname.startsWith('/api/students')) {
-    // Allow business owners to access student profiles for applicants
-    if (user.role !== 'owner' && user.role !== 'student') {
+    if (role !== 'admin') return unauthorizedResponse(pathname, request);
+  } else if (pathname.startsWith('/api/students')) {
+    // Business owners can view applicant profiles; students can read their own.
+    if (role !== 'owner' && role !== 'student') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-  } else if (pathname.startsWith('/api/student') && user.role !== 'student') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  } else if (pathname.startsWith('/api/student')) {
+    if (role !== 'student') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  } else if (pathname.startsWith('/api/business')) {
+    if (role !== 'owner') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  } else if (pathname.startsWith('/api/admin')) {
+    if (role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
   }
 
-  if (pathname.startsWith('/api/business') && user.role !== 'owner') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  if (pathname.startsWith('/api/admin') && user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  return NextResponse.next();
+  return supabaseResponse;
 }
 
 export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - common static asset extensions
      */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
-}; 
+};
