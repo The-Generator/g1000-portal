@@ -1,93 +1,66 @@
-# G1000 Portal — Architecture
+# Architecture: G1000 Portal
 
-## System Overview
+## Overview
+G1000 Portal is a Next.js 14 App Router application connecting Babson College students with business owners for project-based opportunities. Three portals: Student, Business, Admin.
 
-Next.js 14 App Router monolith deployed on Vercel. Supabase provides the hosted PostgreSQL database and authentication service. The application connects Babson College students with business owners for AI/automation consulting projects.
+## Auth Architecture (Post-Migration Target)
 
-## Component Architecture
+### Session Management
+- **Package:** `@supabase/ssr` with `@supabase/supabase-js`
+- **Pattern:** Cookie-based sessions managed by Supabase. No custom JWTs.
+- **Client utilities:**
+  - `src/lib/supabase/client.ts` — `createBrowserClient()` for client components
+  - `src/lib/supabase/server.ts` — `createServerClient()` for server components and route handlers (uses `cookies()` from `next/headers`, synchronous in Next.js 14)
+  - `src/lib/supabase/middleware.ts` — middleware helper using `request.cookies`/`response.cookies`
+- **Cookie format:** Supabase manages `sb-<ref>-auth-token` cookies automatically via `getAll()`/`setAll()` — NEVER use individual `get`/`set`/`remove`
 
+### Auth Flow
+1. User visits `/login` — single unified page with Google OAuth + email/password
+2. Google OAuth: `signInWithOAuth()` → Google → Supabase callback → `/auth/callback` route → `exchangeCodeForSession()`
+3. Email/password: `signInWithPassword()` or `signUp()` directly
+4. Middleware runs `getUser()` on every request → refreshes session → checks role
+5. If no `users` table row → redirect to `/onboarding` for role selection
+6. If role exists → route to role-specific dashboard
+
+### Middleware Logic
+- Runs on all routes except static assets
+- Refreshes Supabase session (critical: no code between `createServerClient` and `getUser()`)
+- Public paths: `/`, `/login`, `/auth/callback`, `/onboarding`
+- Protected paths: `/student/*`, `/business/*`, `/admin/*` and their API equivalents
+- Role enforcement: student↔business cross-access blocked; admin-only for `/admin/*`
+- API routes return 401 JSON (not redirect) for unauthenticated requests
+
+### Onboarding
+- `/onboarding` page: role selection (Student or Business Owner)
+- Student: enforces @babson.edu email, creates `users` (role=student) + `student_profiles`
+- Business Owner: creates `users` (role=owner) + `business_owner_profiles` (is_approved=true)
+- After role selection, collect business details (company name etc.) for business owners
+- Existing users with roles skip onboarding entirely
+
+### Session Helper Pattern for API Routes
+All 36+ API routes use a server-side Supabase client to get the authenticated user:
 ```
-src/
-├── app/
-│   ├── student/*      # Student portal (dashboard, projects, applications)
-│   ├── business/*     # Business owner portal (projects, student matching)
-│   ├── admin/*        # Admin portal (user management, approvals, resources)
-│   └── api/           # API routes organized by domain
-│       ├── auth/      # Login, register, logout, session
-│       ├── students/  # Student-specific endpoints
-│       ├── business/  # Business owner endpoints
-│       ├── projects/  # Project CRUD & lifecycle
-│       ├── admin/     # Admin operations
-│       └── ...
-├── components/        # Shared React components
-└── lib/               # Core libraries
-    ├── supabase.ts    # Supabase client (admin/service-role)
-    ├── auth.ts        # JWT utilities, token helpers
-    ├── email.ts       # Email sending
-    └── helpers.ts     # Shared utilities
-```
-
-Three role-scoped portals share a common component library and API layer. All server-side DB access goes through a single Supabase service-role client.
-
-## Auth Architecture
-
-| Layer | Technology |
-|-------|-----------|
-| Password storage & verification | Supabase Auth |
-| Session tokens | Custom JWTs (jose library) |
-| Token storage | HTTP-only cookies |
-| Route protection | Next.js middleware (role-based) |
-
-**Roles:** `student`, `owner`, `admin`
-
-**Auth flow:**
-1. User registers → Supabase Auth creates auth record
-2. App creates row in `users` table + role-specific profile
-3. Custom JWT issued (contains `userId`, `email`, `role`)
-4. Middleware intercepts every request, verifies JWT, enforces role access
-
-## Data Flow
-
-```
-Browser → Next.js API Route → supabaseAdmin (service role) → PostgreSQL
+const supabase = createClient()  // from src/lib/supabase/server.ts
+const { data: { user } } = await supabase.auth.getUser()
+if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+// Then look up users table row for role/profile data
 ```
 
-- All DB operations use the service-role client (`supabaseAdmin`), never the anon client.
-- API routes parse the JWT from cookies to identify the caller.
-- Middleware rejects unauthenticated or unauthorized requests before they reach API handlers.
-
-## Database (14 Core Tables)
-
-**Identity**
-- `users` — base user record (id, email, role, created_at)
-- `student_profiles` — Babson student details
-- `business_owner_profiles` — business owner details + `is_approved` flag
-- `admins` — admin reference table
-
-**Project Matching**
-- `projects` — business-posted project listings
+## Database Schema (Key Tables)
+- `users` — id (matches Supabase Auth UID), email, name, role, created_at, updated_at
+- `student_profiles` — user_id FK, major, year, skills[], availability, etc.
+- `business_owner_profiles` — user_id FK, company_name, industry, is_approved, etc.
+- `projects` — business owner's posted opportunities
 - `applications` — student applications to projects
 
-**Project Lifecycle**
-- `project_comments` — threaded discussion on projects
-- `project_overviews` — high-level project summaries
-- `project_reflections` — student post-project reflections
-- `project_reviews` — reviews/ratings
-- `project_updates` — status updates during active projects
-
-**Learning Resources**
-- `resources` — shared learning materials
-- `support_documents` — uploaded support files
-- `resource_categories` — taxonomy for resources
+## Tech Stack
+- Next.js 14.0.x (App Router, no Pages Router)
+- Supabase (hosted): Auth + Postgres database
+- Tailwind CSS for styling
+- TypeScript (strict mode)
 
 ## Key Invariants
-
-1. **Service-role only** — All API routes use `supabaseAdmin` for DB operations.
-2. **JWT payload** — Tokens always contain `userId`, `email`, `role`.
-3. **Business approval** — Owners must have `is_approved = true` (auto-set on registration).
-4. **Babson email** — Students must register with an `@babson.edu` address.
-5. **Passwords in Auth only** — Passwords are stored exclusively in Supabase Auth, never in the `users` table.
-
-## Known Implementation Gap
-
-- **Compensation enum drift:** `src/lib/supabase.ts` still types `projects.compensation_type` as legacy values (`stipend`, `equity`, `credit`) while active API/UI flows use `paid-hourly`, `paid-fixed`, and `experience` (see `src/app/api/business/projects/route.ts` and `src/types/index.ts`). Treat this as an existing mismatch during project/compensation changes until schema/types are aligned.
+- `users.id` always matches `auth.users.id` (Supabase Auth UID)
+- Every authenticated user has a `users` row (created during onboarding)
+- `supabaseAdmin` (service role) used only in admin operations and onboarding user creation
+- Passwords stored only in Supabase Auth — never in application tables

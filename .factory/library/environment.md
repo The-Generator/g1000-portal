@@ -1,28 +1,28 @@
 # Environment
 
-**What belongs here:** Required env vars, external dependencies, setup notes.
+Environment variables, external dependencies, and setup notes.
+
+**What belongs here:** Required env vars, external API keys/services, dependency quirks, platform-specific notes.
 **What does NOT belong here:** Service ports/commands (use `.factory/services.yaml`).
 
 ---
 
 ## Required Environment Variables
 
-| Variable | Purpose |
-|----------|---------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key (client-side) |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side only, bypasses RLS) |
-| `JWT_SECRET` | Secret for signing JWT auth tokens |
-| `NEXT_PUBLIC_APP_URL` | Base URL of the application |
-| `SENDGRID_API_KEY` | SendGrid API key for email sending (optional for dev) |
+| Variable | Description | Source |
+|----------|-------------|--------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Supabase dashboard → Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon/public key | Supabase dashboard → Settings → API |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side only) | Supabase dashboard → Settings → API |
+| `NEXT_PUBLIC_APP_URL` | App base URL (http://localhost:3000 for dev) | Set manually |
+| `SENDGRID_API_KEY` | SendGrid API key for emails | SendGrid dashboard |
+
+## Removed Variables (Post-Migration)
+| Variable | Reason |
+|----------|--------|
+| `JWT_SECRET` | Custom JWT signing no longer used — Supabase manages tokens |
 
 ## External Dependencies
-
-- **Supabase**: Hosted PostgreSQL + Auth at `genufllbsvczadzhukor.supabase.co`
-- **SendGrid**: Email delivery (not required for local dev)
-- **Vercel**: Production hosting (deployment only)
-
-## Supabase MCP
-
-Connected via: `droid mcp add supabase https://mcp.supabase.com/mcp?project_ref=genufllbsvczadzhukor --type http`
-Use for direct DB schema inspection and DDL operations.
+- **Supabase (hosted):** Auth, Postgres database, Storage
+- **SendGrid:** Transactional email delivery
+- **Google OAuth:** Requires Google Cloud Console OAuth 2.0 Client ID configured in Supabase dashboard

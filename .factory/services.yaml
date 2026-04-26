@@ -1,9 +1,9 @@
 commands:
   install: npm install
-  build: npm run build
   typecheck: npm run type-check
+  build: npm run build
   lint: npm run lint
-  dev: npm run dev
+  test: npm run type-check && npm run build
 
 services:
   web:
