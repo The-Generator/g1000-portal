@@ -45,4 +45,5 @@ Dev server: 821 MB + 5 agents * 300 MB = 2.3 GB → well within budget
 - Use the shared app instance at `http://localhost:3000`; do not start additional servers.
 - Keep each validator inside its assigned assertion scope and test accounts.
 - Capture screenshots or URL/state evidence for each assertion outcome.
+- If the browser network inspector does not capture requests, use URL transitions, session-cookie evidence, and supporting `curl` output as fallback evidence.
 - If credentials or external OAuth requirements block validation, mark the assertion `blocked` with a concrete reason.

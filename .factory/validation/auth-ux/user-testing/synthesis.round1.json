@@ -1,0 +1,58 @@
+{
+  "milestone": "auth-ux",
+  "round": 1,
+  "status": "fail",
+  "assertionsSummary": {
+    "total": 21,
+    "passed": 17,
+    "failed": 4,
+    "blocked": 0
+  },
+  "passedAssertions": [
+    "VAL-CLEAN-005",
+    "VAL-CLEAN-008",
+    "VAL-LOGIN-001",
+    "VAL-LOGIN-004",
+    "VAL-LOGIN-005",
+    "VAL-LOGIN-006",
+    "VAL-LOGIN-007",
+    "VAL-LOGIN-010",
+    "VAL-ONBOARD-001",
+    "VAL-ONBOARD-002",
+    "VAL-ONBOARD-003",
+    "VAL-ONBOARD-004",
+    "VAL-ONBOARD-005",
+    "VAL-ONBOARD-007",
+    "VAL-ONBOARD-008",
+    "VAL-ONBOARD-009",
+    "VAL-ONBOARD-010"
+  ],
+  "failedAssertions": [
+    {
+      "id": "VAL-LOGIN-002",
+      "reason": "Email/password sign-in established session (cookie present) and allowed dashboard access, but post-login redirect landed on '/' instead of direct role dashboard redirect."
+    },
+    {
+      "id": "VAL-LOGIN-003",
+      "reason": "Email/password registration completed but landed on / instead of /onboarding."
+    },
+    {
+      "id": "VAL-LOGIN-009",
+      "reason": "Profile pages still call '/api/auth/change-password' while no change-password auth route exists; runtime request returns HTTP 404."
+    },
+    {
+      "id": "VAL-ONBOARD-006",
+      "reason": "Existing users authenticated successfully but post-login landed on / instead of direct role dashboard."
+    }
+  ],
+  "blockedAssertions": [],
+  "appliedUpdates": [
+    {
+      "target": "user-testing.md",
+      "description": "Added Flow Validator Guidance section for agent-browser isolation and evidence requirements.",
+      "source": "setup"
+    }
+  ],
+  "previousRound": null,
+  "generatedAt": "2026-04-26T23:31:26.916722+00:00"
+}
