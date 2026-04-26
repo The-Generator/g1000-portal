@@ -1,0 +1,28 @@
+{
+  "featureId": "infra-supabase-ssr-setup",
+  "reviewedAt": "2026-04-26T22:52:05Z",
+  "commitId": "4b5303f",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "fail",
+  "codeReview": {
+    "summary": "Most infrastructure scaffolding matches the Supabase SSR pattern (dependency changes, new client/server/middleware helpers, OAuth callback, and legacy auth file deletions). However, getSessionUser() does not satisfy the feature requirement to return user+profile data; it returns only the users-table profile row.",
+    "issues": [
+      {
+        "file": "src/lib/supabase/server.ts",
+        "line": 67,
+        "severity": "blocking",
+        "description": "getSessionUser() returns only `profile` (`return profile as SessionUser`) instead of returning combined auth `user` + profile as required by the feature description ('returns the user+profile or null')."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "The fullstack-worker SKILL.md verification procedure requires zero type-check errors plus successful build/lint for every feature, but this mission's feature contract explicitly allows temporary consumer failures in this infrastructure step. The skill procedure and milestone contract are misaligned.",
+      "evidence": ".factory/skills/fullstack-worker/SKILL.md Step 4 requires zero type-check/build/lint success; features.json for infra-supabase-ssr-setup expectedBehavior says type-check/build may fail due to downstream consumers."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "Review failed due to one blocking requirement miss: getSessionUser() does not return user+profile as specified. Shared-state note: the worker skill's fixed verification gate conflicts with this milestone's staged migration contract."
+}

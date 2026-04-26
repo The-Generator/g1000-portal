@@ -1,0 +1,46 @@
+{
+  "featureId": "infra-middleware-rewrite",
+  "reviewedAt": "2026-04-26T22:51:33Z",
+  "commitId": "b7ca2214aa274be00183b68df8a3cab2bb0794ef",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "fail",
+  "codeReview": {
+    "summary": "The middleware rewrite implements most routing/role checks, but it violates the mission's critical Supabase SSR requirement to always return the response object produced by updateSession (or copy its cookies into any new response). Multiple branches return fresh redirect/JSON responses without propagating Supabase-refreshed cookies, which can desynchronize session state and cause intermittent logout/auth instability.",
+    "issues": [
+      {
+        "file": "src/middleware.ts",
+        "line": 30,
+        "severity": "blocking",
+        "description": "unauthorizedResponse() constructs fresh NextResponse JSON/redirect responses (lines 32 and 37) and returns them directly. This drops cookies/headers set by updateSession's supabaseResponse, violating the documented critical middleware pattern."
+      },
+      {
+        "file": "src/middleware.ts",
+        "line": 73,
+        "severity": "blocking",
+        "description": "The no-role onboarding branches return new responses (lines 76 and 81) instead of reusing supabaseResponse or copying its cookies first, again violating the required Supabase SSR middleware response contract."
+      },
+      {
+        "file": "src/middleware.ts",
+        "line": 91,
+        "severity": "blocking",
+        "description": "Role-mismatch API branches return new 401 JSON responses (lines 94, 98, 102, 106) without preserving updateSession cookies/headers. This repeats the same contract break on protected API paths."
+      },
+      {
+        "file": "src/middleware.ts",
+        "line": 10,
+        "severity": "non_blocking",
+        "description": "isPublicPath() allows all /auth/* paths, while the feature requirement listed explicit public paths as /, /login, /auth/callback, /onboarding. This broadens unauthenticated surface beyond the stated scope."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "fullstack-worker Step 4 requires running full typecheck/build/lint and expects zero type errors, but this migration milestone is intentionally split across multiple infra features where intermediate commits can have known failing checks in untouched areas. The worker followed a filtered middleware-focused check instead. The skill procedure is stricter than practical milestone execution and may need a milestone-aware exception rule.",
+      "evidence": "Handoff verification lists 'npm run type-check (filtered for middleware.ts errors)' and notes pre-existing errors in yet-to-be-migrated API routes; SKILL.md Step 4 currently mandates full zero-error typecheck/build/lint for each feature."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "Review failed: core Supabase SSR middleware contract was not met because several branches return new responses without preserving updateSession cookies/headers. This is a blocking correctness issue for session stability and must be fixed by always returning supabaseResponse (or cloning/copying its cookies/headers before return)."
+}

@@ -1,0 +1,33 @@
+{
+  "featureId": "infra-api-route-migration",
+  "reviewedAt": "2026-04-26T22:52:08Z",
+  "commitId": "e6a532569594e5568d32aa9756b2a8520f5b3164",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "The feature implementation satisfies the migration scope: legacy auth imports/usages were removed, 40 API routes now use Supabase session helper access, /api/auth/me and /api/auth/logout were rewritten for Supabase sessions, and the 5 legacy credential routes were deleted. I found no blocking correctness defects in the reviewed commit.",
+    "issues": [
+      {
+        "file": "src/app/api/business/active-projects/[id]/route.ts",
+        "line": 12,
+        "severity": "non_blocking",
+        "description": "The feature brief said to preserve existing business logic exactly, but this commit also changes role checks from 'business_owner' to 'owner' in 5 routes (including this file). This appears to be an intentional bug fix, but it is beyond a pure import-swap migration and should be explicitly tracked as behavior change."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "The fullstack-worker skill procedure requires reading .factory/library/architecture.md and .factory/research/supabase-ssr-nextjs.md in Step 1, but this worker transcript skeleton does not show reads of either file while handoff.skillFeedback.followedProcedure is true.",
+      "evidence": "worker-transcripts.jsonl entry for session 90076e5f-fdd2-42f1-9189-722bb93fe5fe shows reads for AGENTS.md, services.yaml, src/lib/supabase/server.ts, and auth-touchpoints.md, but no reads of architecture.md or supabase-ssr-nextjs.md."
+    },
+    {
+      "area": "conventions",
+      "observation": "Mission guidance and feature intent conflict on whether behavior changes are allowed during mass migration work; the worker changed role-gate literals in 5 business routes to satisfy typing and correctness.",
+      "evidence": "AGENTS.md says to only touch auth-related code and preserve business logic boundaries, while commit e6a5325 modifies role checks in src/app/api/business/active-projects/[id]/{route.ts,comments/route.ts,overview/route.ts,review/route.ts} and src/app/api/business/projects/[id]/updates/[updateId]/route.ts from 'business_owner' to 'owner'."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "Reviewed handoff, transcript skeleton, skill file, and commit e6a5325 diff/stat. Feature requirements are met and no blocking defects were found; report marked pass with one non-blocking scope/behavior-change note and two shared-state observations."
+}
