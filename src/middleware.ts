@@ -5,10 +5,10 @@ import { supabaseAdmin } from '@/lib/supabase';
 const PUBLIC_PATHS = new Set(['/', '/login', '/auth/callback', '/onboarding']);
 
 function isPublicPath(pathname: string): boolean {
-  if (PUBLIC_PATHS.has(pathname)) return true;
-  // Allow OAuth callback subpaths (e.g. /auth/callback?code=...) and /auth/* helpers
-  if (pathname.startsWith('/auth/')) return true;
-  return false;
+  // Only the exact paths in PUBLIC_PATHS are public.
+  // /auth/callback is handled here explicitly — broad /auth/* is NOT public,
+  // so other /auth/* helpers (if any) still go through normal auth checks.
+  return PUBLIC_PATHS.has(pathname);
 }
 
 function isProtectedPath(pathname: string): boolean {
@@ -27,14 +27,39 @@ function isApiPath(pathname: string): boolean {
   return pathname.startsWith('/api/');
 }
 
-function unauthorizedResponse(pathname: string, request: NextRequest): NextResponse {
-  if (isApiPath(pathname)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+/**
+ * Copy every cookie from `source` (the upstream Supabase SSR response) onto
+ * `target`. Required because `NextResponse.redirect()` and
+ * `NextResponse.json()` produce fresh responses with no cookies, and the
+ * Supabase auth tokens would otherwise be dropped.
+ */
+function copySupabaseCookies(target: NextResponse, source: NextResponse): void {
+  for (const cookie of source.cookies.getAll()) {
+    target.cookies.set(cookie);
   }
-  const url = request.nextUrl.clone();
-  url.pathname = '/login';
-  url.search = '';
-  return NextResponse.redirect(url);
+}
+
+/**
+ * Build an unauthorized response that PROPAGATES Supabase SSR cookies from the
+ * upstream `supabaseResponse`. This is required so refreshed auth cookies are
+ * not dropped on auth failures (otherwise the browser keeps stale tokens).
+ */
+function unauthorizedResponse(
+  pathname: string,
+  request: NextRequest,
+  supabaseResponse: NextResponse
+): NextResponse {
+  let response: NextResponse;
+  if (isApiPath(pathname)) {
+    response = NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  } else {
+    const url = request.nextUrl.clone();
+    url.pathname = '/login';
+    url.search = '';
+    response = NextResponse.redirect(url);
+  }
+  copySupabaseCookies(response, supabaseResponse);
+  return response;
 }
 
 export async function middleware(request: NextRequest) {
@@ -57,7 +82,7 @@ export async function middleware(request: NextRequest) {
 
   // No session → unauthorized.
   if (!user) {
-    return unauthorizedResponse(pathname, request);
+    return unauthorizedResponse(pathname, request, supabaseResponse);
   }
 
   // Look up the user's role from the `users` table. A missing row means the
@@ -73,37 +98,51 @@ export async function middleware(request: NextRequest) {
   if (!role) {
     // No role yet → send them to onboarding (API requests get 401).
     if (isApiPath(pathname)) {
-      return NextResponse.json({ error: 'Onboarding required' }, { status: 401 });
+      const apiResponse = NextResponse.json(
+        { error: 'Onboarding required' },
+        { status: 401 }
+      );
+      copySupabaseCookies(apiResponse, supabaseResponse);
+      return apiResponse;
     }
     const url = request.nextUrl.clone();
     url.pathname = '/onboarding';
     url.search = '';
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    copySupabaseCookies(redirectResponse, supabaseResponse);
+    return redirectResponse;
   }
+
+  // Helper for cross-role API 401s that must also propagate cookies.
+  const apiUnauthorized = () => {
+    const r = NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    copySupabaseCookies(r, supabaseResponse);
+    return r;
+  };
 
   // Role-based route enforcement.
   if (pathname.startsWith('/student')) {
-    if (role !== 'student') return unauthorizedResponse(pathname, request);
+    if (role !== 'student') return unauthorizedResponse(pathname, request, supabaseResponse);
   } else if (pathname.startsWith('/business')) {
-    if (role !== 'owner') return unauthorizedResponse(pathname, request);
+    if (role !== 'owner') return unauthorizedResponse(pathname, request, supabaseResponse);
   } else if (pathname.startsWith('/admin')) {
-    if (role !== 'admin') return unauthorizedResponse(pathname, request);
+    if (role !== 'admin') return unauthorizedResponse(pathname, request, supabaseResponse);
   } else if (pathname.startsWith('/api/students')) {
     // Business owners can view applicant profiles; students can read their own.
     if (role !== 'owner' && role !== 'student') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiUnauthorized();
     }
   } else if (pathname.startsWith('/api/student')) {
     if (role !== 'student') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiUnauthorized();
     }
   } else if (pathname.startsWith('/api/business')) {
     if (role !== 'owner') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiUnauthorized();
     }
   } else if (pathname.startsWith('/api/admin')) {
     if (role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiUnauthorized();
     }
   }
 
