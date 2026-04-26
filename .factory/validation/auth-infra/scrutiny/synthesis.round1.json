@@ -1,0 +1,81 @@
+{
+  "milestone": "auth-infra",
+  "round": 1,
+  "status": "fail",
+  "validatorsRun": {
+    "test": {
+      "passed": true,
+      "command": "npm run type-check && npm run build",
+      "exitCode": 0
+    },
+    "typecheck": {
+      "passed": true,
+      "command": "npm run type-check",
+      "exitCode": 0
+    },
+    "lint": {
+      "passed": true,
+      "command": "npm run lint",
+      "exitCode": 0
+    }
+  },
+  "reviewsSummary": {
+    "total": 3,
+    "passed": 1,
+    "failed": 2,
+    "failedFeatures": [
+      "infra-supabase-ssr-setup",
+      "infra-middleware-rewrite"
+    ]
+  },
+  "blockingIssues": [
+    {
+      "featureId": "infra-supabase-ssr-setup",
+      "severity": "blocking",
+      "description": "src/lib/supabase/server.ts getSessionUser() returns only the users-table profile row instead of combined auth user + profile required by feature contract."
+    },
+    {
+      "featureId": "infra-middleware-rewrite",
+      "severity": "blocking",
+      "description": "src/middleware.ts unauthorizedResponse() returns fresh JSON/redirect responses without preserving updateSession cookies/headers from supabaseResponse."
+    },
+    {
+      "featureId": "infra-middleware-rewrite",
+      "severity": "blocking",
+      "description": "src/middleware.ts no-role onboarding branches return new responses instead of returning supabaseResponse or copying its cookies first."
+    },
+    {
+      "featureId": "infra-middleware-rewrite",
+      "severity": "blocking",
+      "description": "src/middleware.ts role-mismatch API branches return new 401 responses without propagating updateSession cookies/headers."
+    }
+  ],
+  "appliedUpdates": [],
+  "suggestedGuidanceUpdates": [
+    {
+      "target": "skills",
+      "suggestion": "Update fullstack-worker validation guidance to allow milestone-defined staged exceptions when feature contracts explicitly permit temporary typecheck/build failures in intermediate infrastructure steps.",
+      "evidence": "Both infra-supabase-ssr-setup and infra-middleware-rewrite reviews flagged mismatch between strict SKILL.md Step 4 and milestone contracts that permit intermediate failures.",
+      "isSystemic": true
+    },
+    {
+      "target": "skills",
+      "suggestion": "Require workers to provide explicit evidence when claiming skill procedure compliance (or have reviewers mark mismatch automatically) when mandatory context reads are not present in transcript skeletons.",
+      "evidence": "infra-api-route-migration review found handoff.skillFeedback.followedProcedure=true while transcript skeleton lacked reads of architecture.md and supabase-ssr-nextjs.md mandated by fullstack-worker Step 1.",
+      "isSystemic": false
+    },
+    {
+      "target": "AGENTS.md",
+      "suggestion": "Clarify whether migration features may include tightly-scoped behavior fixes when contracts also say 'preserve business logic exactly' to avoid ambiguous review outcomes.",
+      "evidence": "infra-api-route-migration review noted intentional role literal fixes ('business_owner' -> 'owner') across 5 routes that improved correctness but exceeded pure import-swap scope.",
+      "isSystemic": true
+    }
+  ],
+  "rejectedObservations": [
+    {
+      "observation": "fullstack-worker strict validation gate conflicts with staged milestone contracts",
+      "reason": "duplicate across two review reports; consolidated into one suggested guidance update"
+    }
+  ],
+  "previousRound": null
+}

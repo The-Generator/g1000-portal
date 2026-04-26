@@ -1,7 +1,7 @@
 {
   "milestone": "auth-infra",
-  "round": 1,
-  "status": "fail",
+  "round": 2,
+  "status": "pass",
   "validatorsRun": {
     "test": {
       "passed": true,
@@ -20,62 +20,21 @@
     }
   },
   "reviewsSummary": {
-    "total": 3,
+    "total": 1,
     "passed": 1,
-    "failed": 2,
-    "failedFeatures": [
-      "infra-supabase-ssr-setup",
-      "infra-middleware-rewrite"
-    ]
+    "failed": 0,
+    "failedFeatures": []
   },
-  "blockingIssues": [
-    {
-      "featureId": "infra-supabase-ssr-setup",
-      "severity": "blocking",
-      "description": "src/lib/supabase/server.ts getSessionUser() returns only the users-table profile row instead of combined auth user + profile required by feature contract."
-    },
-    {
-      "featureId": "infra-middleware-rewrite",
-      "severity": "blocking",
-      "description": "src/middleware.ts unauthorizedResponse() returns fresh JSON/redirect responses without preserving updateSession cookies/headers from supabaseResponse."
-    },
-    {
-      "featureId": "infra-middleware-rewrite",
-      "severity": "blocking",
-      "description": "src/middleware.ts no-role onboarding branches return new responses instead of returning supabaseResponse or copying its cookies first."
-    },
-    {
-      "featureId": "infra-middleware-rewrite",
-      "severity": "blocking",
-      "description": "src/middleware.ts role-mismatch API branches return new 401 responses without propagating updateSession cookies/headers."
-    }
-  ],
+  "blockingIssues": [],
   "appliedUpdates": [],
   "suggestedGuidanceUpdates": [
     {
-      "target": "skills",
-      "suggestion": "Update fullstack-worker validation guidance to allow milestone-defined staged exceptions when feature contracts explicitly permit temporary typecheck/build failures in intermediate infrastructure steps.",
-      "evidence": "Both infra-supabase-ssr-setup and infra-middleware-rewrite reviews flagged mismatch between strict SKILL.md Step 4 and milestone contracts that permit intermediate failures.",
-      "isSystemic": true
-    },
-    {
-      "target": "skills",
-      "suggestion": "Require workers to provide explicit evidence when claiming skill procedure compliance (or have reviewers mark mismatch automatically) when mandatory context reads are not present in transcript skeletons.",
-      "evidence": "infra-api-route-migration review found handoff.skillFeedback.followedProcedure=true while transcript skeleton lacked reads of architecture.md and supabase-ssr-nextjs.md mandated by fullstack-worker Step 1.",
-      "isSystemic": false
-    },
-    {
       "target": "AGENTS.md",
-      "suggestion": "Clarify whether migration features may include tightly-scoped behavior fixes when contracts also say 'preserve business logic exactly' to avoid ambiguous review outcomes.",
-      "evidence": "infra-api-route-migration review noted intentional role literal fixes ('business_owner' -> 'owner') across 5 routes that improved correctness but exceeded pure import-swap scope.",
+      "suggestion": "Clarify the @supabase/ssr cookie guidance to distinguish Supabase client cookie adapters (which should use getAll/setAll) from NextResponse propagation code (which may need per-cookie set loops when setAll is unavailable).",
+      "evidence": "The fix review for fix-scrutiny-auth-infra passed with middleware cookie propagation implemented via per-cookie `target.cookies.set(cookie)` loops, while mission guidance currently states to never use individual cookie get/set/remove.",
       "isSystemic": true
     }
   ],
-  "rejectedObservations": [
-    {
-      "observation": "fullstack-worker strict validation gate conflicts with staged milestone contracts",
-      "reason": "duplicate across two review reports; consolidated into one suggested guidance update"
-    }
-  ],
-  "previousRound": null
+  "rejectedObservations": [],
+  "previousRound": ".factory/validation/auth-infra/scrutiny/synthesis.round1.json"
 }

@@ -1,0 +1,21 @@
+{
+  "featureId": "fix-scrutiny-auth-infra",
+  "reviewedAt": "2026-04-26T22:59:05.166079Z",
+  "commitId": "0119dcee61e970be84518b95c8cb9330fe8da4ab",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "The fix commit fully addresses both prior blocking failures: middleware now propagates Supabase cookies on every fresh redirect/JSON response branch, and public-path matching is tightened to exact `/auth/callback`; additionally, `getSessionUser()` shape was re-validated against current route consumers and remains compatible without code changes.",
+    "issues": []
+  },
+  "sharedStateObservations": [
+    {
+      "area": "conventions",
+      "observation": "Cookie guidance is ambiguous: mission AGENTS.md says to never use individual cookie set/get/remove, but this fix correctly uses per-cookie `target.cookies.set(cookie)` to copy cookies from `supabaseResponse` because `ResponseCookies` on `NextResponse` does not expose `setAll`.",
+      "evidence": "Mission AGENTS.md (@supabase/ssr section) states 'NEVER use individual get/set/remove'; src/middleware.ts in commit 0119dce uses `for (const cookie of source.cookies.getAll()) { target.cookies.set(cookie); }` to preserve Supabase cookies across fresh responses."
+    }
+  ],
+  "addressesFailureFrom": ".factory/validation/auth-infra/scrutiny/reviews/infra-supabase-ssr-setup.json; .factory/validation/auth-infra/scrutiny/reviews/infra-middleware-rewrite.json",
+  "summary": "Pass. I reviewed the fix feature transcript skeleton and diffs for fix commit 0119dce plus both original failed commits/reviews. The middleware cookie-propagation contract is now satisfied across all previously failing branches, `/auth/*` broad bypass was removed, and current `getSessionUser()` return shape matches inspected consumers (`/api/auth/me`, `/api/student/me`, `/api/business/profile`)."
+}
