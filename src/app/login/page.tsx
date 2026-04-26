@@ -25,8 +25,8 @@ import { createClient } from '@/lib/supabase/client';
 type Mode = 'login' | 'register';
 
 /**
- * Unified login page replacing the legacy /business/login, /admin/login, and
- * student-specific /login pages. Authentication goes through Supabase Auth
+ * Unified login page replacing the legacy role-specific login pages.
+ * Authentication goes through Supabase Auth
  * directly from the browser via @supabase/ssr's createBrowserClient. After a
  * successful sign-in, middleware (not this page) decides where to send the
  * user based on their role / onboarding status.
