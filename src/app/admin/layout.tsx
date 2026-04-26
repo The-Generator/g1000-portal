@@ -58,14 +58,14 @@ export default function AdminLayout({
         const userData = data.data;
         
         if (userData.role !== 'admin') {
-          router.push('/admin/login');
+          router.push('/login');
           return;
         }
         
         setUser(userData);
         setLoading(false);
       } else if (response.status === 401) {
-        router.push('/admin/login');
+        router.push('/login');
       }
     } catch (error) {
       console.error('Auth check failed:', error);
@@ -78,19 +78,12 @@ export default function AdminLayout({
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
       toast.success('Logged out successfully');
-      router.push('/admin/login');
+      router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
       toast.error('Logout failed');
     }
   };
-
-  // Don't show layout for auth pages
-  const isAuthPage = pathname === '/admin/login';
-  
-  if (isAuthPage) {
-    return <>{children}</>;
-  }
 
   // Show loading state while checking auth
   if (loading || !user) {

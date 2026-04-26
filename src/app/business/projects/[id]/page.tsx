@@ -95,7 +95,7 @@ export default function BusinessProjectDetailPage({ params }: { params: { id: st
 
       if (!response.ok) {
         if (response.status === 401) {
-          router.push('/business/login');
+          router.push('/login');
           return;
         }
         throw new Error('Failed to fetch project');

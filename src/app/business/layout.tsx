@@ -45,14 +45,9 @@ export default function BusinessLayout({
   const [loading, setLoading] = useState(true);
   const [showSignOutMenu, setShowSignOutMenu] = useState(false);
 
-  // Don't show layout for auth pages
-  const isAuthPage = pathname === '/business/login' || pathname === '/business/register';
-
   useEffect(() => {
-    if (!isAuthPage) {
-      checkAuth();
-    }
-  }, [isAuthPage]);
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     if (user && user.role === 'owner') {
@@ -130,7 +125,7 @@ export default function BusinessLayout({
         const userData = data.data;
         
         if (userData.role !== 'owner') {
-          router.push('/business/login');
+          router.push('/login');
           return;
         }
         
@@ -145,11 +140,11 @@ export default function BusinessLayout({
           setLoading(false);
         }
       } else {
-        router.push('/business/login');
+        router.push('/login');
       }
     } catch (error) {
       console.error('Auth check failed:', error);
-      router.push('/business/login');
+      router.push('/login');
     }
   };
 
@@ -157,16 +152,12 @@ export default function BusinessLayout({
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
       toast.success('Logged out successfully');
-      router.push('/business/login');
+      router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
       toast.error('Logout failed');
     }
   };
-
-  if (isAuthPage) {
-    return <>{children}</>;
-  }
 
   // Show loading state while checking auth
   if (loading || !user) {

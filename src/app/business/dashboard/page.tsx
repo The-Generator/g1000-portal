@@ -141,7 +141,7 @@ export default function BusinessDashboardPage() {
 
       if (response.status === 401) {
         // If unauthorized, redirect to login
-        router.push('/business/login');
+        router.push('/login');
         return;
       }
 

@@ -62,7 +62,7 @@ export default function HomePage() {
                   Student Login
                 </Button>
               </Link>
-              <Link href="/business/login">
+              <Link href="/login">
                 <Button
                   variant="ghost"
                   className="hidden sm:inline-flex"
@@ -113,7 +113,7 @@ export default function HomePage() {
             </Link>
 
             <Link
-              href="/business/login"
+              href="/login"
               data-testid="cta-business"
               aria-label="Business owner portal login"
               className="group flex flex-col items-center text-center p-8 rounded-2xl bg-white border-2 border-generator-dark shadow-soft hover:shadow-xl hover:-translate-y-1 transition-all"
