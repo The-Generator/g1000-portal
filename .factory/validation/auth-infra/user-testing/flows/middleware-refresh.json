@@ -1,0 +1,46 @@
+{
+  "groupId": "middleware-refresh",
+  "testedAt": "2026-04-26T23:04:57Z",
+  "isolation": {
+    "mode": "read-only static/runtime check",
+    "appUrl": "http://localhost:3000",
+    "missionDir": "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d"
+  },
+  "toolsUsed": ["shell", "search"],
+  "assertions": [
+    {
+      "id": "VAL-INFRA-004",
+      "title": "Middleware refreshes Supabase session on every request",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Search src/middleware.ts for session refresh entrypoint",
+          "expected": "Middleware invokes session refresh on matched requests",
+          "observed": "Found `const { supabaseResponse, user } = await updateSession(request);` at line 70 and middleware returns `supabaseResponse` across branches."
+        },
+        {
+          "action": "Search src/lib/supabase/middleware.ts for verified user refresh call",
+          "expected": "Supabase SSR helper calls `supabase.auth.getUser()` after client creation",
+          "observed": "Found `await supabase.auth.getUser()` at line 48 in updateSession helper."
+        },
+        {
+          "action": "Search middleware/helper files for cookie propagation behavior",
+          "expected": "Refreshed cookies are propagated to outgoing responses",
+          "observed": "Found helper cookie callbacks `getAll`/`setAll` and `supabaseResponse.cookies.set(...)` in src/lib/supabase/middleware.ts; found `copySupabaseCookies(...)` used for redirect/401 branches in src/middleware.ts."
+        }
+      ],
+      "evidence": {
+        "files": [
+          "auth-infra/middleware-refresh/VAL-INFRA-004-middleware-refresh-call.txt",
+          "auth-infra/middleware-refresh/VAL-INFRA-004-getUser-cookie-propagation.txt"
+        ],
+        "consoleErrors": "not applicable (shell/static validation)",
+        "network": "not applicable (static code assertion)"
+      },
+      "issues": null
+    }
+  ],
+  "frictions": [],
+  "blockers": [],
+  "summary": "VAL-INFRA-004 passed via static shell/search verification: middleware triggers Supabase session refresh via updateSession, updateSession calls supabase.auth.getUser(), and refreshed cookies are propagated through helper callbacks and middleware response cookie copy logic."
+}

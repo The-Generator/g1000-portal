@@ -1,0 +1,328 @@
+{
+  "groupId": "static-code",
+  "testedAt": "2026-04-26T23:03:02.760493+00:00",
+  "isolation": {
+    "mode": "read-only static checks",
+    "repoRoot": "/Users/skarnz/g1000-portal-1",
+    "missionDir": "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d",
+    "appUrl": "http://localhost:3000",
+    "constraints": [
+      "No code/data mutation during checks",
+      "No service start/stop",
+      "Shell/search/file-read checks only"
+    ]
+  },
+  "toolsUsed": [
+    "Read",
+    "Grep",
+    "Glob"
+  ],
+  "assertions": [
+    {
+      "id": "VAL-INFRA-001",
+      "title": "Supabase SSR browser client utility exists",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Search src/lib for createBrowserClient",
+          "expected": "Exactly one utility file",
+          "observed": "Found only src/lib/supabase/client.ts"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a (static code check)",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-INFRA-002",
+      "title": "Supabase SSR server client utility exists",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Inspect src/lib/supabase/server.ts",
+          "expected": "createServerClient from @supabase/ssr with cookies()",
+          "observed": "Imports @supabase/ssr createServerClient and uses cookies().getAll/setAll"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-INFRA-003",
+      "title": "Supabase SSR middleware client utility exists",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Inspect middleware helper and middleware import",
+          "expected": "middleware.ts imports helper; helper uses createServerClient",
+          "observed": "middleware.ts imports updateSession from '@/lib/supabase/middleware'; helper imports createServerClient from @supabase/ssr"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-INFRA-005",
+      "title": "@supabase/ssr package added to package.json",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Search package.json for @supabase/ssr",
+          "expected": "Dependency present",
+          "observed": "\"@supabase/ssr\": \"^0.10.2\" present in dependencies"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-INFRA-006",
+      "title": "OAuth callback route exchanges code for session",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Inspect src/app/auth/callback/route.ts",
+          "expected": "Reads code and calls exchangeCodeForSession(code)",
+          "observed": "GET handler reads code query param and calls supabase.auth.exchangeCodeForSession(code)"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-INFRA-008",
+      "title": "New session helper replaces getUserFromRequest in all API routes",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Search src for getUserFromRequest",
+          "expected": "Zero matches",
+          "observed": "No matches found"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-INFRA-009",
+      "title": "Middleware public path exemptions updated for new auth routes",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Inspect src/middleware.ts path exemptions",
+          "expected": "Allow /login, /auth/callback, /onboarding and remove old role-specific login/register exemptions",
+          "observed": "PUBLIC_PATHS contains /login,/auth/callback,/onboarding; no business/login, business/register, admin/login references"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-CLEAN-001",
+      "title": "Old auth files deleted",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Check for src/lib/auth.ts and src/lib/auth-edge.ts and imports",
+          "expected": "Files and imports absent",
+          "observed": "Files absent; no @/lib/auth or @/lib/auth-edge imports found under src/"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-CLEAN-002",
+      "title": "jose package removed",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Search package.json for jose",
+          "expected": "No dependency entry",
+          "observed": "No matches found"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-CLEAN-003",
+      "title": "bcryptjs package removed",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Search package.json for bcryptjs and @types/bcryptjs",
+          "expected": "No dependency entries",
+          "observed": "No matches found"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-CLEAN-004",
+      "title": "Old auth API routes deleted",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Check for legacy auth route directories and old token usage",
+          "expected": "Legacy route dirs removed; no signToken/auth-token usage",
+          "observed": "Legacy dirs not present; no signToken/auth-token references; /api/auth/me and /api/auth/logout use Supabase session helpers"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-CLEAN-006",
+      "title": "JWT_SECRET removed from env configuration",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Search .env.example and src for JWT_SECRET",
+          "expected": "Zero matches",
+          "observed": "No matches found in .env.example or src/"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-CLEAN-007",
+      "title": "auth-token cookie references removed",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "Search src for auth-token references",
+          "expected": "Zero matches",
+          "observed": "No matches found"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-CLEAN-009",
+      "title": "Dead change-password references fixed or removed",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "Search src for change-password references",
+          "expected": "No dead references, or working endpoint present",
+          "observed": "References remain in business/profile/page.tsx and student/profile/page.tsx to /api/auth/change-password; corresponding route file absent"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "network": "n/a",
+        "artifacts": [
+          "auth-infra/static-code/static-checks.txt"
+        ]
+      },
+      "issues": "Dead endpoint references still exist: /api/auth/change-password is referenced by two profile pages, but no endpoint route exists."
+    }
+  ],
+  "frictions": [
+    {
+      "description": "Initial combined regex for auth import search had escaping incompatibility with ripgrep wrapper.",
+      "resolved": true,
+      "resolution": "Split into fixed-string checks for @/lib/auth and @/lib/auth-edge.",
+      "affectedAssertions": [
+        "VAL-CLEAN-001"
+      ]
+    }
+  ],
+  "blockers": [],
+  "summary": "Tested 14 assertions: 13 passed, 1 failed (VAL-CLEAN-009)."
+}

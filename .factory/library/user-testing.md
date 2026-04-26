@@ -31,3 +31,10 @@ Available headroom: ~16 GB * 0.7 = 11.2 GB usable
 Dev server: 821 MB + 5 agents * 300 MB = 2.3 GB → well within budget
 
 **Max concurrent validators: 5**
+
+## Flow Validator Guidance: shell-curl
+
+- Use the shared app instance at `http://localhost:3000`; do not start additional servers.
+- Keep checks read-only: file reads, `curl`, `npm run type-check`, and `npm run build`.
+- Do not mutate business data or auth tables during this milestone validation pass.
+- For assertions requiring authenticated user context, mark as `blocked` if no stable test credential/session path exists in this milestone.

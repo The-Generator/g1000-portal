@@ -1,0 +1,61 @@
+{
+  "milestone": "auth-infra",
+  "round": 1,
+  "status": "fail",
+  "assertionsSummary": {
+    "total": 24,
+    "passed": 20,
+    "failed": 2,
+    "blocked": 2
+  },
+  "passedAssertions": [
+    "VAL-CLEAN-001",
+    "VAL-CLEAN-002",
+    "VAL-CLEAN-003",
+    "VAL-CLEAN-004",
+    "VAL-CLEAN-006",
+    "VAL-CLEAN-007",
+    "VAL-CLEAN-010",
+    "VAL-INFRA-001",
+    "VAL-INFRA-002",
+    "VAL-INFRA-003",
+    "VAL-INFRA-004",
+    "VAL-INFRA-005",
+    "VAL-INFRA-006",
+    "VAL-INFRA-007",
+    "VAL-INFRA-008",
+    "VAL-INFRA-009",
+    "VAL-PROTECT-001",
+    "VAL-PROTECT-002",
+    "VAL-PROTECT-003",
+    "VAL-PROTECT-004"
+  ],
+  "failedAssertions": [
+    {
+      "id": "VAL-CLEAN-009",
+      "reason": "Dead endpoint references still exist: /api/auth/change-password is referenced by two profile pages, but no endpoint route exists."
+    },
+    {
+      "id": "VAL-PROTECT-008",
+      "reason": "Expected /auth/callback to be publicly accessible with HTTP 200, but observed redirect to /login."
+    }
+  ],
+  "blockedAssertions": [
+    {
+      "id": "VAL-LOGIN-008",
+      "blockedBy": "Blocked on prerequisite: no working authenticated business-owner session path found via current app API mechanisms; without a valid session, the 200 authenticated branch cannot be validated."
+    },
+    {
+      "id": "VAL-PROTECT-009",
+      "blockedBy": "Blocked on prerequisite: authenticated business-owner session and known authorized student id were not obtainable via available read-only test path in this milestone state."
+    }
+  ],
+  "appliedUpdates": [
+    {
+      "target": "user-testing.md",
+      "description": "Added \"Flow Validator Guidance: shell-curl\" section with isolation and read-only constraints for this milestone.",
+      "source": "setup"
+    }
+  ],
+  "previousRound": null
+}

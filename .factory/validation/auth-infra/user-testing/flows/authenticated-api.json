@@ -1,0 +1,91 @@
+{
+  "groupId": "authenticated-api",
+  "testedAt": "2026-04-26T23:03:07Z",
+  "isolation": {
+    "appUrl": "http://localhost:3000",
+    "missionDir": "/Users/skarnz/.factory/missions/9ec162d9-5622-4c61-87cb-d91964c2871d",
+    "flowValidatorGuidance": "shell-curl",
+    "credentials": "No reliable authenticated business-owner credentials/session path available in current milestone state"
+  },
+  "toolsUsed": ["curl"],
+  "assertions": [
+    {
+      "id": "VAL-LOGIN-008",
+      "title": "/api/auth/me returns current user from Supabase session",
+      "status": "blocked",
+      "steps": [
+        {
+          "action": "GET /api/auth/me without session cookie",
+          "expected": "401 Unauthorized",
+          "observed": "401 Unauthorized with {\"error\":\"Unauthorized\"}"
+        },
+        {
+          "action": "Attempt to establish business-owner session via POST /api/auth/business/login with owner@example.com/password123",
+          "expected": "Login route exists and sets session cookie if credentials valid",
+          "observed": "404 Not Found; no cookie set"
+        },
+        {
+          "action": "GET /api/auth/me with cookie jar from auth attempt",
+          "expected": "200 with user object when authenticated",
+          "observed": "401 Unauthorized (still unauthenticated)"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a (curl flow)",
+        "network": "GET /api/auth/me -> 401; POST /api/auth/business/login -> 404; GET /api/auth/me (with cookie jar) -> 401",
+        "artifacts": [
+          "auth-infra/authenticated-api/VAL-LOGIN-008-api-auth-me-no-session.txt",
+          "auth-infra/authenticated-api/auth-attempt-owner-example.txt",
+          "auth-infra/authenticated-api/cookies-attempt.txt",
+          "auth-infra/authenticated-api/VAL-LOGIN-008-api-auth-me-after-auth-attempt.txt"
+        ]
+      },
+      "issues": "Blocked on prerequisite: no working authenticated business-owner session path found via current app API mechanisms; without a valid session, the 200 authenticated branch cannot be validated."
+    },
+    {
+      "id": "VAL-PROTECT-009",
+      "title": "Business owners can access /api/students/:id/profile",
+      "status": "blocked",
+      "steps": [
+        {
+          "action": "GET /api/students/00000000-0000-0000-0000-000000000000/profile without session",
+          "expected": "401 Unauthorized for unauthenticated requests",
+          "observed": "401 Unauthorized with {\"error\":\"Unauthorized\"}"
+        },
+        {
+          "action": "Retry GET /api/students/:id/profile with cookie jar from attempted owner login",
+          "expected": "200 with profile data for authenticated owner and authorized student id",
+          "observed": "401 Unauthorized because no owner session cookie was established"
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a (curl flow)",
+        "network": "GET /api/students/:id/profile -> 401; GET /api/students/:id/profile (with cookie jar) -> 401",
+        "artifacts": [
+          "auth-infra/authenticated-api/VAL-PROTECT-009-owner-profile-no-session.txt",
+          "auth-infra/authenticated-api/cookies-attempt.txt",
+          "auth-infra/authenticated-api/VAL-PROTECT-009-owner-profile-after-auth-attempt.txt"
+        ]
+      },
+      "issues": "Blocked on prerequisite: authenticated business-owner session and known authorized student id were not obtainable via available read-only test path in this milestone state."
+    }
+  ],
+  "frictions": [
+    {
+      "description": "Assigned assertions require an authenticated business-owner session, but no reliable credential/session bootstrap path was available with read-only curl constraints.",
+      "resolved": false,
+      "resolution": "Attempted /api/auth/business/login with a standard sample credential pattern; endpoint returned 404 and no cookies were set.",
+      "affectedAssertions": ["VAL-LOGIN-008", "VAL-PROTECT-009"]
+    }
+  ],
+  "blockers": [
+    {
+      "description": "Missing/invalid session bootstrap path for owner auth under curl-only read-only validation context",
+      "affectedAssertions": ["VAL-LOGIN-008", "VAL-PROTECT-009"],
+      "quickFixAttempted": "Retried using cookie jar flow and explicit POST to /api/auth/business/login; still 404 and no auth cookies"
+    }
+  ],
+  "summary": "Tested 2 assertions: 0 passed, 0 failed, 2 blocked. Unauthenticated branches returned 401 as expected, but authenticated owner branches could not be executed due to inability to establish a valid owner session in current milestone state."
+}

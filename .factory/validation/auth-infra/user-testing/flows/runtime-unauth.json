@@ -1,0 +1,191 @@
+{
+  "groupId": "runtime-unauth",
+  "testedAt": "2026-04-26T23:02:41.165841+00:00",
+  "isolation": {
+    "appUrl": "http://localhost:3000",
+    "mode": "unauthenticated runtime verification via curl",
+    "dataMutation": "none (read-only checks only)"
+  },
+  "toolsUsed": [
+    "curl"
+  ],
+  "assertions": [
+    {
+      "id": "VAL-PROTECT-001",
+      "title": "Unauthenticated /student/* access redirects to /login",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "GET /student/dashboard without auth cookie",
+          "expected": "307 redirect with Location: /login",
+          "observed": "307 with Location: /login"
+        }
+      ],
+      "evidence": {
+        "curlHeaders": [
+          "auth-infra/runtime-unauth/VAL-PROTECT-001.headers.txt"
+        ],
+        "curlBody": [
+          "auth-infra/runtime-unauth/VAL-PROTECT-001.body.txt"
+        ],
+        "network": "GET /student/dashboard -> 307, Location: /login"
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-PROTECT-002",
+      "title": "Unauthenticated /business/* access redirects to /login",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "GET /business/dashboard without auth cookie",
+          "expected": "307 redirect with Location: /login",
+          "observed": "307 with Location: /login"
+        }
+      ],
+      "evidence": {
+        "curlHeaders": [
+          "auth-infra/runtime-unauth/VAL-PROTECT-002.headers.txt"
+        ],
+        "curlBody": [
+          "auth-infra/runtime-unauth/VAL-PROTECT-002.body.txt"
+        ],
+        "network": "GET /business/dashboard -> 307, Location: /login"
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-PROTECT-003",
+      "title": "Unauthenticated /admin/* access redirects to /login",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "GET /admin without auth cookie",
+          "expected": "307 redirect with Location: /login",
+          "observed": "307 with Location: /login"
+        }
+      ],
+      "evidence": {
+        "curlHeaders": [
+          "auth-infra/runtime-unauth/VAL-PROTECT-003.headers.txt"
+        ],
+        "curlBody": [
+          "auth-infra/runtime-unauth/VAL-PROTECT-003.body.txt"
+        ],
+        "network": "GET /admin -> 307, Location: /login"
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-PROTECT-004",
+      "title": "Unauthenticated API requests return 401",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "GET /api/student/me without auth cookie",
+          "expected": "401 JSON unauthorized response",
+          "observed": "401 body: {\"error\":\"Unauthorized\"}"
+        },
+        {
+          "action": "GET /api/business/projects without auth cookie",
+          "expected": "401 JSON unauthorized response",
+          "observed": "401 body: {\"error\":\"Unauthorized\"}"
+        },
+        {
+          "action": "GET /api/admin/businesses without auth cookie",
+          "expected": "401 JSON unauthorized response",
+          "observed": "401 body: {\"error\":\"Unauthorized\"}"
+        }
+      ],
+      "evidence": {
+        "curlHeaders": [
+          "auth-infra/runtime-unauth/VAL-PROTECT-004-student.headers.txt",
+          "auth-infra/runtime-unauth/VAL-PROTECT-004-business.headers.txt",
+          "auth-infra/runtime-unauth/VAL-PROTECT-004-admin.headers.txt"
+        ],
+        "curlBody": [
+          "auth-infra/runtime-unauth/VAL-PROTECT-004-student.body.txt",
+          "auth-infra/runtime-unauth/VAL-PROTECT-004-business.body.txt",
+          "auth-infra/runtime-unauth/VAL-PROTECT-004-admin.body.txt"
+        ],
+        "network": "GET /api/student/me -> 401; GET /api/business/projects -> 401; GET /api/admin/businesses -> 401"
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-PROTECT-008",
+      "title": "Public routes accessible without auth",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "GET / without auth cookie",
+          "expected": "200 OK",
+          "observed": "200"
+        },
+        {
+          "action": "GET /login without auth cookie",
+          "expected": "200 OK",
+          "observed": "200"
+        },
+        {
+          "action": "GET /auth/callback without auth cookie",
+          "expected": "200 OK",
+          "observed": "307 with Location: http://localhost:3000/login"
+        }
+      ],
+      "evidence": {
+        "curlHeaders": [
+          "auth-infra/runtime-unauth/VAL-PROTECT-008-root.headers.txt",
+          "auth-infra/runtime-unauth/VAL-PROTECT-008-login.headers.txt",
+          "auth-infra/runtime-unauth/VAL-PROTECT-008-callback.headers.txt"
+        ],
+        "curlBody": [
+          "auth-infra/runtime-unauth/VAL-PROTECT-008-root.body.txt",
+          "auth-infra/runtime-unauth/VAL-PROTECT-008-login.body.txt",
+          "auth-infra/runtime-unauth/VAL-PROTECT-008-callback.body.txt"
+        ],
+        "network": "GET / -> 200; GET /login -> 200; GET /auth/callback -> 307 Location: http://localhost:3000/login"
+      },
+      "issues": "Expected /auth/callback to be publicly accessible with HTTP 200, but observed redirect to /login."
+    },
+    {
+      "id": "VAL-CLEAN-010",
+      "title": "Deleted auth page URLs return 404 or redirect to /login",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "GET /business/login",
+          "expected": "404 or 307 redirect to /login",
+          "observed": "307 with Location: /login"
+        },
+        {
+          "action": "GET /business/register",
+          "expected": "404 or 307 redirect to /login",
+          "observed": "307 with Location: /login"
+        },
+        {
+          "action": "GET /admin/login",
+          "expected": "404 or 307 redirect to /login",
+          "observed": "307 with Location: /login"
+        }
+      ],
+      "evidence": {
+        "curlHeaders": [
+          "auth-infra/runtime-unauth/VAL-CLEAN-010-business-login.headers.txt",
+          "auth-infra/runtime-unauth/VAL-CLEAN-010-business-register.headers.txt",
+          "auth-infra/runtime-unauth/VAL-CLEAN-010-admin-login.headers.txt"
+        ],
+        "curlBody": [
+          "auth-infra/runtime-unauth/VAL-CLEAN-010-business-login.body.txt",
+          "auth-infra/runtime-unauth/VAL-CLEAN-010-business-register.body.txt",
+          "auth-infra/runtime-unauth/VAL-CLEAN-010-admin-login.body.txt"
+        ],
+        "network": "GET /business/login -> 307 Location: /login; GET /business/register -> 307 Location: /login; GET /admin/login -> 307 Location: /login"
+      },
+      "issues": null
+    }
+  ],
+  "frictions": [],
+  "blockers": [],
+  "summary": "Tested 6 assertions: 5 passed, 1 failed, 0 blocked. Failed: VAL-PROTECT-008"
+}
