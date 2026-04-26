@@ -11,6 +11,17 @@ function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.has(pathname);
 }
 
+function dashboardForRole(role: 'student' | 'owner' | 'admin'): string {
+  switch (role) {
+    case 'student':
+      return '/student/dashboard';
+    case 'owner':
+      return '/business/dashboard';
+    case 'admin':
+      return '/admin';
+  }
+}
+
 function isProtectedPath(pathname: string): boolean {
   return (
     pathname.startsWith('/student') ||
@@ -69,8 +80,28 @@ export async function middleware(request: NextRequest) {
   // cookies are kept in sync regardless of which branch we take below.
   const { supabaseResponse, user } = await updateSession(request);
 
-  // Public paths: allow through without any auth checks.
+  // Public paths: allow through without any auth checks, EXCEPT for the
+  // landing page `/`. When an authenticated user lands on `/` (e.g. after
+  // login completes via `window.location.href = '/'`), redirect them to
+  // their role-specific dashboard or to /onboarding if they have no role
+  // yet. Unauthenticated visitors continue to see the landing page.
   if (isPublicPath(pathname)) {
+    if (pathname === '/' && user) {
+      const { data: profile } = await supabaseAdmin
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      const role = profile?.role as 'student' | 'owner' | 'admin' | undefined;
+
+      const url = request.nextUrl.clone();
+      url.pathname = role ? dashboardForRole(role) : '/onboarding';
+      url.search = '';
+      const redirectResponse = NextResponse.redirect(url);
+      copySupabaseCookies(redirectResponse, supabaseResponse);
+      return redirectResponse;
+    }
     return supabaseResponse;
   }
 
