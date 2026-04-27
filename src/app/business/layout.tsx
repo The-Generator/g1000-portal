@@ -341,7 +341,7 @@ export default function BusinessLayout({
 
       {/* Mobile Navigation */}
       {showSignOutMenu && (
-        <div className="lg:hidden bg-white border-b border-gray-200">
+        <div className="lg:hidden bg-white border-b border-gray-200 sign-out-dropdown">
           <div className="pt-3 pb-4 space-y-1">
             {navigation.map((item) => {
               const isActive = pathname === item.href;
