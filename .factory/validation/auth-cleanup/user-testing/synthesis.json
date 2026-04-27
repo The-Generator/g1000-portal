@@ -1,0 +1,34 @@
+{
+  "milestone": "auth-cleanup",
+  "round": 1,
+  "status": "fail",
+  "assertionsSummary": {
+    "total": 13,
+    "passed": 12,
+    "failed": 0,
+    "blocked": 1
+  },
+  "passedAssertions": [
+    "VAL-PROTECT-005",
+    "VAL-PROTECT-006",
+    "VAL-PROTECT-007",
+    "VAL-PROTECT-009",
+    "VAL-LOGIN-008",
+    "VAL-CLEAN-009",
+    "VAL-CROSS-002",
+    "VAL-CROSS-003",
+    "VAL-CROSS-004",
+    "VAL-CROSS-005",
+    "VAL-CROSS-006",
+    "VAL-CROSS-007"
+  ],
+  "failedAssertions": [],
+  "blockedAssertions": [
+    {
+      "id": "VAL-CROSS-001",
+      "blockedBy": "Google OAuth consent/callback completion requires interactive Google account authentication unavailable in this environment; initiation redirect was verified."
+    }
+  ],
+  "appliedUpdates": [],
+  "previousRound": null
+}
