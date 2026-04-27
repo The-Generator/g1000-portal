@@ -83,17 +83,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (body.role === 'student') {
-      // 4a. Student onboarding — enforce @babson.edu policy.
-      if (!email.toLowerCase().endsWith('@babson.edu')) {
-        return NextResponse.json(
-          {
-            error:
-              'Only @babson.edu email addresses can register as students',
-          },
-          { status: 403 }
-        );
-      }
-
+      // 4a. Student onboarding — any email can register as a student.
       const studentName = metaName || email.split('@')[0];
 
       const { error: userInsertError } = await supabaseAdmin

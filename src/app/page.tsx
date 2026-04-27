@@ -17,7 +17,6 @@ import {
   CommandLineIcon,
   CpuChipIcon,
   QuestionMarkCircleIcon,
-  PhoneIcon,
   EnvelopeIcon,
   ExclamationTriangleIcon,
   PlayCircleIcon
@@ -104,7 +103,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-2xl font-bold text-generator-dark mb-2">I'm a Student</h3>
               <p className="text-gray-600 mb-4">
-                Babson students: log in or register with your <span className="font-semibold">@babson.edu</span> email to browse opportunities.
+                Log in or register to browse opportunities posted by business owners.
               </p>
               <span className="inline-flex items-center text-generator-green font-semibold">
                 Student Login
@@ -251,7 +250,7 @@ export default function HomePage() {
                 <h3 className="text-2xl font-bold text-gray-900 ml-4">For Students</h3>
               </div>
               <p className="text-gray-700 leading-relaxed">
-                Babson students log in with their babson.edu email to view and apply for posted opportunities.
+                Students log in to view and apply for posted opportunities.
                 Students who have led a G1000 Bootcamp receive priority access when applying.
               </p>
             </div>
@@ -288,31 +287,31 @@ export default function HomePage() {
                 <div className="flex items-start">
                   <ExclamationTriangleIcon className="w-5 h-5 text-amber-600 mr-2 flex-shrink-0 mt-0.5" />
                   <p className="text-amber-800">
-                    <span className="font-semibold">This is a BETA version.</span> If there are any issues, please contact Gavin Mestler.
+                    <span className="font-semibold">This is a BETA version.</span> If there are any issues, please contact the G1000 team.
                   </p>
                 </div>
 
                 <div className="flex items-start">
                   <PlayCircleIcon className="w-5 h-5 text-amber-600 mr-2 flex-shrink-0 mt-0.5" />
-                  <p className="text-amber-800">
+                  <div className="text-amber-800">
                     <span className="font-semibold">Watch Tutorial:</span>
-                    <a href="https://www.youtube.com/watch?v=xSMx84UMe7E" target="_blank" rel="noopener noreferrer" className="ml-1 hover:underline text-blue-700">
-                      How to Use the G1000 Portal
+                    <a
+                      href="https://www.youtube.com/watch?v=xSMx84UMe7E"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 inline-flex items-center px-4 py-2 rounded-lg bg-red-600 text-white font-semibold text-sm shadow-lg animate-pulse hover:bg-red-700 transition-colors"
+                      style={{ boxShadow: '0 0 15px 5px rgba(239,68,68,0.5), 0 0 30px 10px rgba(239,68,68,0.3)' }}
+                    >
+                      ▶ How to Use the G1000 Portal
                     </a>
-                  </p>
+                  </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:space-x-6 space-y-2 sm:space-y-0 ml-7">
                   <div className="flex items-center text-amber-800">
-                    <PhoneIcon className="w-4 h-4 mr-2" />
-                    <span className="font-medium">Phone:</span>
-                    <a href="tel:7606817000" className="ml-1 hover:underline">760-681-7000</a>
-                  </div>
-
-                  <div className="flex items-center text-amber-800">
                     <EnvelopeIcon className="w-4 h-4 mr-2" />
                     <span className="font-medium">Email:</span>
-                    <a href="mailto:gmestler1@babson.edu" className="ml-1 hover:underline">gmestler1@babson.edu</a>
+                    <a href="mailto:babsongenerator@gmail.com" className="ml-1 hover:underline">babsongenerator@gmail.com</a>
                   </div>
                 </div>
 
@@ -337,7 +336,7 @@ export default function HomePage() {
 
             <div className="flex space-x-6">
               <a href="https://www.babson.edu/thegenerator/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">About</a>
-              <a href="mailto:gmestler1@babson.edu" className="hover:text-white transition-colors">Contact</a>
+              <a href="mailto:babsongenerator@gmail.com" className="hover:text-white transition-colors">Contact</a>
             </div>
           </div>
 

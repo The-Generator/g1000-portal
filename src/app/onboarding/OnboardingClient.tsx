@@ -28,14 +28,13 @@ interface OnboardingClientProps {
 
 /**
  * Client UI for the onboarding role-picker. Two paths:
- *   - "Student" — must have a @babson.edu email. POSTs to
+ *   - "Student" — any email can register. POSTs to
  *     /api/auth/onboarding and redirects to /student/dashboard.
  *   - "Business Owner" — opens an inline form for company / contact name,
  *     then POSTs and redirects to /business/dashboard.
  *
- * Errors from the API surface inline so a user who fails the @babson.edu
- * check on Student can still go back and pick Business Owner without losing
- * context.
+ * Errors from the API surface inline so a user can go back and pick
+ * Business Owner without losing context.
  */
 export default function OnboardingClient({
   email,
@@ -48,8 +47,6 @@ export default function OnboardingClient({
   >(null);
   const [companyName, setCompanyName] = useState('');
   const [contactName, setContactName] = useState(defaultName);
-
-  const isBabsonEmail = email.toLowerCase().endsWith('@babson.edu');
 
   async function submitOnboarding(payload: Record<string, unknown>) {
     const res = await fetch('/api/auth/onboarding', {
@@ -74,16 +71,6 @@ export default function OnboardingClient({
 
   const handleSelectStudent = async () => {
     setError('');
-
-    // Client-side @babson.edu enforcement so the user gets immediate
-    // feedback. The server route enforces this again as the source of truth.
-    if (!isBabsonEmail) {
-      setError(
-        'Only @babson.edu email addresses can register as students. You can choose Business Owner instead.'
-      );
-      return;
-    }
-
     setSubmittingRole('student');
     try {
       const redirectTo = await submitOnboarding({ role: 'student' });
@@ -223,7 +210,7 @@ export default function OnboardingClient({
                   projects that match your skills.
                 </p>
                 <p className="text-xs text-gray-500">
-                  Requires a <span className="font-mono">@babson.edu</span> email.
+                  Open to all students.
                 </p>
                 <div className="mt-6 text-sm font-medium text-generator-green">
                   {submittingRole === 'student'
